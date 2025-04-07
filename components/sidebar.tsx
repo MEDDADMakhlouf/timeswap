@@ -1,32 +1,38 @@
-"use client"
+"use client";
 
-import Link from "next/link"
-import { usePathname } from "next/navigation"
-import { Bell, Home, LogOut, FlipHorizontalIcon as SwapHorizontal } from "lucide-react"
-import { cn } from "@/lib/utils"
-import { Logo } from "@/components/logo"
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import {
+  Bell,
+  Home,
+  LogOut,
+  FlipHorizontalIcon as SwapHorizontal,
+} from "lucide-react";
+import Image from "next/image";
+import { cn } from "@/lib/utils";
+import { Logo } from "@/components/logo";
 
 export function Sidebar() {
-  const pathname = usePathname()
+  const pathname = usePathname();
 
   const navItems = [
     {
       name: "Home",
-      href: "/",
-      icon: Home,
+      href: "/dashboard",
+      icon: "/home.svg",
     },
     {
       name: "Swap Request",
-      href: "/swap-request",
-      icon: SwapHorizontal,
+      href: "/dashboard/swap-request",
+      icon: "/swap.svg",
     },
     {
       name: "Notifications",
-      href: "/notifications",
-      icon: Bell,
+      href: "/dashboard/notifications",
+      icon: "/notification.svg",
       badge: 12,
     },
-  ]
+  ];
 
   return (
     <div className="w-56 border-r bg-white flex flex-col h-full">
@@ -41,10 +47,12 @@ export function Sidebar() {
                 href={item.href}
                 className={cn(
                   "flex items-center gap-3 px-4 py-3 text-sm font-medium",
-                  pathname === item.href ? "bg-blue-50 text-blue-600" : "text-gray-600 hover:bg-gray-100",
+                  pathname === item.href
+                    ? "bg-blue-50 text-blue-600"
+                    : "text-gray-600 hover:bg-gray-100"
                 )}
               >
-                <item.icon className="h-5 w-5" />
+                <img src={item.icon} />
                 {item.name}
                 {item.badge && (
                   <span className="ml-auto flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs text-white">
@@ -66,6 +74,5 @@ export function Sidebar() {
         </Link>
       </div>
     </div>
-  )
+  );
 }
-

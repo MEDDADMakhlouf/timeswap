@@ -33,7 +33,7 @@ export default function SwapRequestPage() {
           <SwapRequestFilter label="All Types" />
           <SwapRequestFilter label="All Statuses" />
           <Button className="gap-2" asChild>
-            <Link href="/swap-request/create">
+            <Link href="/dashboard/swap-request/create">
               <svg
                 width="20"
                 height="20"
