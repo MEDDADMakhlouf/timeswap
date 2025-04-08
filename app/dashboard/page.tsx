@@ -15,14 +15,16 @@ export default function HomePage() {
       </div>
 
       <div className="mb-8">
-        <h2 className="text-xl font-semibold flex items-center gap-2 mb-4">
-          <Clock className="h-5 w-5" />
+        <h2 className="text-xl text-[#71717A] font-semibold flex items-center gap-2 mb-4">
+          <img src="/notification.svg" alt="" />
           Recent Notification
         </h2>
+        <hr className="w-[98%] mx-auto border-t border-[#d0dff6] mb-4" />
+
         <div className="grid gap-4 md:grid-cols-2">
           <SwapRequestNotification
             type="new"
-            message="Prof. Neila Hocini has requested to swap Physics 202 on March 25, 2025 for Computer Networks"
+            message="Prof. Neila Hocini has requested to swap Physics 202 on March 26, 2025 for Computer Networks"
             time="10 minutes ago"
           />
           <SwapRequestNotification
@@ -34,7 +36,7 @@ export default function HomePage() {
       </div>
 
       <div>
-        <h2 className="text-xl font-semibold flex items-center gap-2 mb-4">
+        <h2 className="text-xl text-[#71717A] font-semibold flex items-center gap-2 mb-4">
           <Calendar className="h-5 w-5" />
           My TimeTable
         </h2>

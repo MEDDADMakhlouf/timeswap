@@ -1,5 +1,26 @@
-.relative {
-  img {
-    padding: 9px;
-  }
+:root {
+  --btn-primary-bg: #0334bc;
+  --btn-primary-text: #fafafa;
+  --btn-primary-border: #0334bc;
+
+  --btn-secondary-bg: #ffffff;
+  --btn-secondary-text: black;
+  --btn-secondary-border: #e4e4e7;
+}
+.relative img {
+  padding: 9px;
+}
+.btn-primary {
+  background-color: var(--btn-primary-bg) !important;
+  color: var(--btn-primary-text) !important;
+  border: 1px solid var(--btn-primary-border) !important;
+  width: 145px !important;
+  height: 35px !important;
+}
+.btn-secondary {
+  background-color: var(--btn-secondary-bg) !important;
+  color: var(--btn-secondary-text) !important;
+  border: 1px solid var(--btn-secondary-border) !important;
+  width: 145px !important;
+  height: 35px !important;
 }
