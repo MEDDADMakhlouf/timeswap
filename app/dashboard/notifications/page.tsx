@@ -1,17 +1,19 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { NotificationItem } from "@/components/notification-item"
+import { useState } from "react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { NotificationItem } from "@/components/notification-item";
 
 export default function NotificationsPage() {
-  const [activeTab, setActiveTab] = useState("all")
+  const [activeTab, setActiveTab] = useState("all");
 
   return (
     <div className="p-6">
       <div className="mb-6">
         <h1 className="text-2xl font-bold mb-1">Notifications</h1>
-        <p className="text-gray-500">Stay updated with your swap requests and schedule changes</p>
+        <p className="text-gray-500">
+          Stay updated with your swap requests and schedule changes
+        </p>
       </div>
 
       <Tabs defaultValue="all" className="w-full" onValueChange={setActiveTab}>
@@ -52,13 +54,13 @@ export default function NotificationsPage() {
           <NotificationItem
             type="new"
             title="New Swap Request"
-            message="Prof. Neila Hocini has requested to swap Physics 202 on March 25, 2025 for Computer Networks"
+            message="Prof. Neila Hocini has requested to swap Physics 202 on March 26, 2025 for Computer Networks"
             time="10 minutes ago"
           />
           <NotificationItem
             type="accepted"
             title="Swap Request Accepted"
-            message="Prof. Neila Hocini has accepted your swap request for Mathematics 101on March 25, 2025"
+            message="Prof. Neila Hocini has accepted your swap request for Mathematics 101on March 26, 2025"
             time="10 minutes ago"
           />
           <NotificationItem
@@ -79,7 +81,7 @@ export default function NotificationsPage() {
           <NotificationItem
             type="new"
             title="New Swap Request"
-            message="Prof. Neila Hocini has requested to swap Physics 202 on March 25, 2025 for Computer Networks"
+            message="Prof. Neila Hocini has requested to swap Physics 202 on March 26, 2025 for Computer Networks"
             time="10 minutes ago"
           />
         </TabsContent>
@@ -88,7 +90,7 @@ export default function NotificationsPage() {
           <NotificationItem
             type="accepted"
             title="Swap Request Accepted"
-            message="Prof. Neila Hocini has accepted your swap request for Mathematics 101on March 25, 2025"
+            message="Prof. Neila Hocini has accepted your swap request for Mathematics 101on March 26, 2025"
             time="10 minutes ago"
           />
         </TabsContent>
@@ -112,6 +114,5 @@ export default function NotificationsPage() {
         </TabsContent>
       </Tabs>
     </div>
-  )
+  );
 }
-

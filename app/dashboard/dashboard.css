@@ -16,6 +16,11 @@
   border: 1px solid var(--btn-primary-border) !important;
   width: 145px !important;
   height: 35px !important;
+  &:hover {
+    background-color: var(--btn-primary-bg) !important;
+    color: var(--btn-primary-text) !important;
+    border: 1px solid var(--btn-primary-border) !important;
+  }
 }
 .btn-secondary {
   background-color: var(--btn-secondary-bg) !important;
