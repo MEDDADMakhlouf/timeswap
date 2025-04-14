@@ -289,14 +289,14 @@ export default function CreateSwapRequestPage() {
   };
 
   return (
-    <div className="p-6">
+    <div className="p-6 max-w-3xl">
       {/* Header / Back Link */}
       <div className="mb-8">
         <Link
           href="/swap-request"
-          className="flex items-center gap-2 text-blue-600 mb-4"
+          className="flex items-center gap-2 text-[#000000] mb-4"
         >
-          <ChevronLeft className="h-4 w-4" />
+          <ChevronLeft className="h-4 w-4 text-4xl" />
           Swap Request Form
         </Link>
         <h1 className="text-2xl font-bold mb-1">Create Swap Request</h1>
@@ -331,63 +331,72 @@ export default function CreateSwapRequestPage() {
       {/* Step 1: Choose Option & Select New Slot */}
       {step === 1 && (
         <div className="space-y-8">
-          {/* Swap Option Selection */}
-          <div>
-            <h2 className="text-lg font-semibold mb-4">Choose Swap Option</h2>
-            <div className="flex flex-col gap-4">
-              <Button
-                onClick={() => setSwapChoice("both")}
-                variant={swapChoice === "both" ? "default" : "outline"}
-              >
-                Swap Time & Room
-              </Button>
-              <Button
-                onClick={() => setSwapChoice("time")}
-                variant={swapChoice === "time" ? "default" : "outline"}
-              >
-                Swap Time Only
-              </Button>
-              <Button
-                onClick={() => setSwapChoice("room")}
-                variant={swapChoice === "room" ? "default" : "outline"}
-              >
-                Swap Room Only
-              </Button>
-            </div>
+          <div className="grid grid-cols-2 gap-4">
+            <select className="px-4 py-2 rounded-md bg-white border">
+              <option value="sunday">Sunday</option>
+              <option value="monday">Monday</option>
+              <option value="tuesday">Tuesday</option>
+              <option value="Wednesday">Wednesday</option>
+              <option value="thursday">Thursday</option>
+              <option value="friday">Friday</option>
+              <option value="saturday">Saturday</option>
+            </select>
+            <select className="px-4 py-2 rounded-md bg-white border">
+              <option value="8-9">8:00 - 9:30</option>
+              <option value="8-9">9:40 - 11:10</option>
+              <option value="8-9">11:20 - 12:50</option>
+              <option value="8-9">13:00 - 14:30</option>
+              <option value="8-9">14:40 - 16:10</option>
+              <option value="8-9">16:20 - 17:50</option>
+            </select>
           </div>
 
-          {/* New Time Slot Selection */}
-          {swapChoice && (
-            <div>
-              <h2 className="text-lg font-semibold mb-4">
-                Select New Time Slot
-              </h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <Select onValueChange={(value) => setSelectedDay(value)}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select a Day" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="monday">Monday</SelectItem>
-                    <SelectItem value="tuesday">Tuesday</SelectItem>
-                    <SelectItem value="wednesday">Wednesday</SelectItem>
-                    <SelectItem value="thursday">Thursday</SelectItem>
-                    <SelectItem value="friday">Friday</SelectItem>
-                  </SelectContent>
-                </Select>
-                <Select onValueChange={(value) => setSelectedTime(value)}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select a Time" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="08:00-09:30">08:00 - 09:30</SelectItem>
-                    <SelectItem value="09:30-11:00">09:30 - 11:00</SelectItem>
-                    <SelectItem value="11:00-12:30">11:00 - 12:30</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+          <fieldset>
+            <legend className="text-sm font-medium text-[#09090B] mb-4">
+              Choose the Desired Swap Type
+            </legend>
+            <div className="pl-3">
+              <label className="flex item-center space-x-2">
+                <input
+                  onChange={(e: any) => e.target.value}
+                  type="radio"
+                  name="swapType"
+                  value="full"
+                />
+                <span>Swap Entire Session (Time & Room) </span>
+              </label>
+
+              <label className="flex item-center space-x-2">
+                <input
+                  onChange={(e: any) => e.target.value}
+                  type="radio"
+                  name="swapType"
+                  value="full"
+                />
+                <span>Change Room Only (Keep Same Time)</span>
+              </label>
+
+              <label className="flex item-center space-x-2">
+                <input
+                  onChange={(e: any) => setSwapChoice(e.target.value)}
+                  type="radio"
+                  name="swapType"
+                  value="full"
+                />
+                <span>Change Time Only (Keep Same Room)</span>
+              </label>
             </div>
-          )}
+          </fieldset>
+          <div className="flex justify-center gap-4 ">
+            <button className="border rounded-md px-4 py-2">Cancel</button>
+            <button
+              className="bg-[#0334BC8F] px-4 py-2 rounded-sm text-white"
+              onClick={(e) => setStep(2)}
+              // disabled={!swapChoice || !selectedDay || !selectedTime}
+            >
+              Next Step
+            </button>
+          </div>
 
           {/* Navigation Button */}
           <div className="flex justify-end gap-4">
