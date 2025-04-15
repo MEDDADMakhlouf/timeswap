@@ -279,8 +279,9 @@ export default function CreateSwapRequestPage() {
   const [selectedTime, setSelectedTime] = useState("");
 
   const handleNextStep = () => {
-    // You can add validation logic here
-    setStep(2);
+    if (swapChoice && selectedDay && selectedTime) {
+      setStep(2);
+    }
   };
 
   const handleSubmitRequest = () => {
@@ -349,8 +350,8 @@ export default function CreateSwapRequestPage() {
               <option value="8-9">14:40 - 16:10</option>
               <option value="8-9">16:20 - 17:50</option>
             </select>
+            <select className="px-9 py-2 rounded-md bg-white border"></select>
           </div>
-
           <fieldset>
             <legend className="text-sm font-medium text-[#09090B] mb-4">
               Choose the Desired Swap Type
@@ -358,7 +359,7 @@ export default function CreateSwapRequestPage() {
             <div className="pl-3">
               <label className="flex item-center space-x-2">
                 <input
-                  onChange={(e: any) => e.target.value}
+                  onChange={(e: any) => setSwapChoice(e.target.value)}
                   type="radio"
                   name="swapType"
                   value="full"
@@ -368,10 +369,10 @@ export default function CreateSwapRequestPage() {
 
               <label className="flex item-center space-x-2">
                 <input
-                  onChange={(e: any) => e.target.value}
+                  onChange={(e: any) => setSwapChoice(e.target.value)}
                   type="radio"
                   name="swapType"
-                  value="full"
+                  value="room"
                 />
                 <span>Change Room Only (Keep Same Time)</span>
               </label>
@@ -381,12 +382,13 @@ export default function CreateSwapRequestPage() {
                   onChange={(e: any) => setSwapChoice(e.target.value)}
                   type="radio"
                   name="swapType"
-                  value="full"
+                  value="time"
                 />
                 <span>Change Time Only (Keep Same Room)</span>
               </label>
             </div>
           </fieldset>
+          {swapChoice} / {selectedDay} / {selectedTime}
           <div className="flex justify-center gap-4 ">
             <button className="border rounded-md px-4 py-2">Cancel</button>
             <button
@@ -397,16 +399,7 @@ export default function CreateSwapRequestPage() {
               Next Step
             </button>
           </div>
-
           {/* Navigation Button */}
-          <div className="flex justify-end gap-4">
-            <Button
-              disabled={!swapChoice || !selectedDay || !selectedTime}
-              onClick={handleNextStep}
-            >
-              Next Step
-            </Button>
-          </div>
         </div>
       )}
 
