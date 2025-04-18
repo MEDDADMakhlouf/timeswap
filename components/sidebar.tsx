@@ -1,5 +1,5 @@
 "use client";
-
+import * as React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -11,9 +11,13 @@ import {
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { Logo } from "@/components/logo";
+import { useIsMobile } from "@/hooks/use-mobile"; // custom hook to detect mobile screens
+import { useSwapRequestStore } from "@/store/useSwapRequestStore"; // Zustand store
 
 export function Sidebar() {
   const pathname = usePathname();
+  const isMobile = useIsMobile(); // Check if the user is on a mobile screen
+  const pendingCount = useSwapRequestStore((state) => state.pendingCount); // Get pending swap requests from Zustand store
 
   const navItems = [
     {
@@ -30,10 +34,30 @@ export function Sidebar() {
       name: "Notifications",
       href: "/dashboard/notifications",
       icon: "/notification.svg",
-      badge: 12,
+      badge: pendingCount > 0 ? pendingCount : null, // Display badge if there are pending requests
     },
   ];
 
+  if (isMobile) {
+    // Mobile layout: render a dropdown for navigation
+    return (
+      <div className="w-full border-b bg-white px-4 py-3">
+        <select
+          onChange={(e) => (window.location.href = e.target.value)} // Navigate to the selected URL
+          className="w-full rounded-md border px-3 py-2 text-sm text-gray-700"
+          value={pathname}
+        >
+          {navItems.map((item) => (
+            <option key={item.name} value={item.href}>
+              {item.name} {item.badge ? `(${item.badge})` : ""}
+            </option>
+          ))}
+        </select>
+      </div>
+    );
+  }
+
+  // Desktop layout: full sidebar with nav items
   return (
     <div className="w-56 border-r bg-white flex flex-col h-full">
       <div className="p-4">
@@ -46,13 +70,16 @@ export function Sidebar() {
               <Link
                 href={item.href}
                 className={cn(
-                  "flex items-center gap-3 px-4 py-3 text-sm font-medium",
+                  "flex items-center gap-3 px-4 py-3 text-sm font-medium transition-colors",
                   pathname === item.href
-                    ? "bg-blue-50 text-blue-600"
-                    : "text-gray-600 hover:bg-gray-100"
+                    ? "bg-blue-50 text-blue-600" // active link style
+                    : "text-gray-700 hover:bg-gray-100 hover:text-blue-600" // hover effect
                 )}
               >
-                <img src={item.icon} />
+                <img
+                  src={item.icon}
+                  className={pathname === item.href ? "text-blue-600" : "text-gray-500"} // Icon color change
+                />
                 {item.name}
                 {item.badge && (
                   <span className="ml-auto flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs text-white">

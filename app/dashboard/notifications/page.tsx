@@ -1,19 +1,27 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { NotificationItem } from "@/components/notification-item";
 import { useQuery } from "@tanstack/react-query";
 import { fetchswaprequest } from "@/actions/fetchswaprequest";
 import type { SessionSwap } from "@/types/Session";
+import { useSwapRequestStore } from "@/store/useSwapRequestStore"; // adjust path as needed
+
 
 export default function NotificationsPage() {
   const { data, error, isLoading } = useQuery<SessionSwap[]>({
     queryKey: ["swapRequests"],
     queryFn: fetchswaprequest,
   });
+  const setRequests = useSwapRequestStore((state) => state.setRequests);
+ 
   console.log(data);
-
+  useEffect(() => {
+    if (data && !isLoading && !error) {
+      setRequests(data);
+    }
+  }, [data, isLoading, error, setRequests]);
   const [activeTab, setActiveTab] = useState("all");
 
   if (error) return <div>Error: {error.message}</div>;
