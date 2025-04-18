@@ -141,3 +141,80 @@ export function Timetable() {
     </div>
   );
 }
+export function UpdatedTimetable() {
+  const updatedTimeSlots = [
+    "08:00 - 09:30",
+    "09:40 - 11:10",
+    "11:20 - 12:50",
+    "13:00 - 14:30",
+    "14:40 - 16:10",
+    "16:20 - 17:50",
+  ];
+
+  return (
+    <div className="space-y-4">
+      <div className="flex justify-between items-center">
+        <h2 className="text-xl font-bold">My TimeTable</h2>
+      </div>
+      <div className="border rounded-lg overflow-hidden">
+        {/* Header row with 7 columns (empty cell + 6 time slots) */}
+        <div className="grid grid-cols-7 border-b">
+          <div className="p-3 font-medium border-r"></div>
+          {updatedTimeSlots.map((time) => (
+            <div key={time} className="p-3 font-medium text-center text-xs">
+              {time}
+            </div>
+          ))}
+        </div>
+        {/* Day rows with 7 columns */}
+        {days.map((day) => (
+          <div key={day} className="grid grid-cols-7 border-b last:border-b-0">
+            <div className="p-3 font-medium border-r">{day}</div>
+            {updatedTimeSlots.map((time) => {
+              const classData = scheduleData.find(
+                (item) => item.day === day && item.time === time
+              );
+              return (
+                <div key={`${day}-${time}`} className="p-2 min-h-24">
+                  {classData ? (
+                    <div
+                      className={`${classData.color} p-2 rounded-md h-full flex flex-col`}
+                    >
+                      <div className="font-medium text-sm">
+                        {classData.course}
+                      </div>
+                      {classData.room && (
+                        <div className="text-xs text-gray-600">
+                          {classData.room}
+                        </div>
+                      )}
+                      {classData.type && (
+                        <div className="mt-auto">
+                          <span
+                            className={`text-xs px-2 py-1 rounded-full ${
+                              classData.type === "Lecture"
+                                ? "bg-blue-500"
+                                : classData.type === "TD"
+                                ? "bg-green-500"
+                                : "bg-orange-500"
+                            } text-white`}
+                          >
+                            {classData.type}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    <div className="text-xs text-gray-400 h-full flex items-center justify-center">
+                      Available
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
