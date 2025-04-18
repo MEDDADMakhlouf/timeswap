@@ -12,229 +12,41 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { SessionSwap } from "@/types/Session";
 
-// Sample data
-const swapRequests = [
-  {
-    id: 1,
-    date: "March 20, 2025",
-    subject: "Database Systems",
-    professor: "Zeghedani Salah eddine",
-    type: "Cour",
-    room: "214D",
-    newRoom: "214D",
-    status: "accepted" as const,
-  },
-  {
-    id: 2,
-    date: "March 20, 2025",
-    subject: "Algorithms",
-    professor: "Zeghedani Salah eddine",
-    type: "TD",
-    room: "214D",
-    newRoom: "214D",
-    status: "pending" as const,
-  },
-  {
-    id: 3,
-    date: "March 20, 2025",
-    subject: "Database Systems",
-    professor: "Zeghedani Salah eddine",
-    type: "TP",
-    room: "214D",
-    newRoom: "214D",
-    status: "rejected" as const,
-  },
-  {
-    id: 4,
-    date: "March 20, 2025",
-    subject: "Algorithms",
-    professor: "Zeghedani Salah eddine",
-    type: "TD",
-    room: "214D",
-    newRoom: "214D",
-    status: "pending" as const,
-  },
-  {
-    id: 5,
-    date: "March 20, 2025",
-    subject: "Programming Languages",
-    professor: "Zeghedani Salah eddine",
-    type: "Cour",
-    room: "214D",
-    newRoom: "214D",
-    status: "rejected" as const,
-  },
-  {
-    id: 6,
-    date: "March 20, 2025",
-    subject: "Algorithms",
-    professor: "Zeghedani Salah eddine",
-    type: "TD",
-    room: "214D",
-    newRoom: "214D",
-    status: "accepted" as const,
-  },
-  {
-    id: 7,
-    date: "March 20, 2025",
-    subject: "Database Systems",
-    professor: "Zeghedani Salah eddine",
-    type: "Cour",
-    room: "214D",
-    newRoom: "214D",
-    status: "accepted" as const,
-  },
-];
+type Props = {
+  data: SessionSwap[];
+};
 
-export function SwapRequestTable() {
-  const [selectedRequest, setSelectedRequest] = useState<number | null>(null);
+export function SwapRequestTable({ data }: Props) {
+  const [selectedRequest, setSelectedRequest] = useState<SessionSwap | null>(null);
   const [detailsOpen, setDetailsOpen] = useState(false);
 
-  const handleViewDetails = (id: number) => {
-    setSelectedRequest(id);
+  const handleViewDetails = (request: SessionSwap) => {
+    setSelectedRequest(request);
     setDetailsOpen(true);
   };
-
-  const currentRequest =
-    selectedRequest !== null
-      ? swapRequests.find((req) => req.id === selectedRequest)
-      : null;
 
   return (
     <div className="border rounded-lg overflow-hidden">
       <table className="w-full">
         <thead>
           <tr className="border-b bg-gray-50">
-            <th className="p-3 text-left font-medium w-10">
+            <th className="p-3 w-10">
               <Checkbox />
             </th>
-            <th className="p-3 text-left font-medium w-36">Date</th>
-            <th className="p-3 text-left font-medium">
-              <div className="flex items-center gap-1">
-                Subject
-                <svg
-                  width="16"
-                  height="16"
-                  viewBox="0 0 16 16"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M8 4V12M8 4L5 7M8 4L11 7"
-                    stroke="currentColor"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-              </div>
-            </th>
-            <th className="p-3 text-left font-medium">
-              <div className="flex items-center gap-1">
-                Professor
-                <svg
-                  width="16"
-                  height="16"
-                  viewBox="0 0 16 16"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M8 4V12M8 4L5 7M8 4L11 7"
-                    stroke="currentColor"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-              </div>
-            </th>
-            <th className="p-3 text-left font-medium w-20">
-              <div className="flex items-center gap-1">
-                Type
-                <svg
-                  width="16"
-                  height="16"
-                  viewBox="0 0 16 16"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M8 4V12M8 4L5 7M8 4L11 7"
-                    stroke="currentColor"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-              </div>
-            </th>
-            <th className="p-3 text-left font-medium w-24">
-              <div className="flex items-center gap-1">
-                Room
-                <svg
-                  width="16"
-                  height="16"
-                  viewBox="0 0 16 16"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M8 4V12M8 4L5 7M8 4L11 7"
-                    stroke="currentColor"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-              </div>
-            </th>
-            <th className="p-3 text-left font-medium w-24">
-              <div className="flex items-center gap-1">
-                New Room
-                <svg
-                  width="16"
-                  height="16"
-                  viewBox="0 0 16 16"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M8 4V12M8 4L5 7M8 4L11 7"
-                    stroke="currentColor"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-              </div>
-            </th>
-            <th className="p-3 text-left font-medium w-32">
-              <div className="flex items-center gap-1">
-                Status
-                <svg
-                  width="16"
-                  height="16"
-                  viewBox="0 0 16 16"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M8 4V12M8 4L5 7M8 4L11 7"
-                    stroke="currentColor"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-              </div>
-            </th>
+            <th className="p-3 text-left font-medium">Date</th>
+            <th className="p-3 text-left font-medium">Subject</th>
+            <th className="p-3 text-left font-medium">Professor</th>
+            <th className="p-3 text-left font-medium">Type</th>
+            <th className="p-3 text-left font-medium">Room</th>
+            <th className="p-3 text-left font-medium">New Room</th>
+            <th className="p-3 text-left font-medium">Status</th>
             <th className="p-3 w-10"></th>
           </tr>
         </thead>
         <tbody>
-          {swapRequests.map((request) => (
+          {data.map((request) => (
             <tr
               key={request.id}
               className="border-b last:border-b-0 hover:bg-gray-50"
@@ -242,26 +54,29 @@ export function SwapRequestTable() {
               <td className="p-3">
                 <Checkbox />
               </td>
-              <td className="p-3 text-sm">{request.date}</td>
-              <td className="p-3 text-sm">{request.subject}</td>
-              <td className="p-3 text-sm">{request.professor}</td>
+              <td className="p-3 text-sm">
+                {request.from_session.week_day},{" "}
+                {request.from_session.starting_time} - {request.from_session.ending_time}
+              </td>
+              <td className="p-3 text-sm">{request.from_session.module}</td>
+              <td className="p-3 text-sm">{request.from_session.teacher.username}</td>
               <td className="p-3">
                 <span
                   className={`px-2 py-1 text-xs font-medium rounded-md ${
-                    request.type === "Cour"
+                    request.from_session.session_type === "Cour"
                       ? "bg-blue-500 text-white"
-                      : request.type === "TD"
+                      : request.from_session.session_type === "TD"
                       ? "bg-green-500 text-white"
                       : "bg-orange-500 text-white"
                   }`}
                 >
-                  {request.type}
+                  {request.from_session.session_type}
                 </span>
               </td>
-              <td className="p-3 text-sm">{request.room}</td>
-              <td className="p-3 text-sm">{request.newRoom}</td>
+              <td className="p-3 text-sm">{request.from_session.room.room_id}</td>
+              <td className="p-3 text-sm">{request.to_session.room.room_id}</td>
               <td className="p-3">
-                <SwapRequestStatus status={request.status} />
+                <SwapRequestStatus status={request.status.toLowerCase() as any} />
               </td>
               <td className="p-3">
                 <DropdownMenu>
@@ -271,12 +86,10 @@ export function SwapRequestTable() {
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
-                    <DropdownMenuItem
-                      onClick={() => handleViewDetails(request.id)}
-                    >
+                    <DropdownMenuItem onClick={() => handleViewDetails(request)}>
                       View Details
                     </DropdownMenuItem>
-                    {request.status === "pending" && (
+                    {request.status === "PENDING" && (
                       <>
                         <DropdownMenuItem>Accept</DropdownMenuItem>
                         <DropdownMenuItem>Reject</DropdownMenuItem>
@@ -289,96 +102,23 @@ export function SwapRequestTable() {
           ))}
         </tbody>
       </table>
-      <div className="p-4 border-t flex items-center justify-between">
-        <div className="text-sm text-gray-500">Page 1 of 10</div>
-        <div className="flex items-center gap-1">
-          <Button variant="outline" size="icon" disabled>
-            <svg
-              width="16"
-              height="16"
-              viewBox="0 0 16 16"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M11 12L7 8L11 4"
-                stroke="currentColor"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-          </Button>
-          <Button variant="outline" size="icon" disabled>
-            <svg
-              width="16"
-              height="16"
-              viewBox="0 0 16 16"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M9 12L5 8L9 4"
-                stroke="currentColor"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-          </Button>
-          <Button variant="outline" size="icon">
-            <svg
-              width="16"
-              height="16"
-              viewBox="0 0 16 16"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M7 4L11 8L7 12"
-                stroke="currentColor"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-          </Button>
-          <Button variant="outline" size="icon">
-            <svg
-              width="16"
-              height="16"
-              viewBox="0 0 16 16"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M5 4L9 8L5 12"
-                stroke="currentColor"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-          </Button>
-        </div>
-      </div>
 
-      {/* Request Details Modal */}
+      {/* Modal */}
       <SwapRequestDetails
         open={detailsOpen}
         onOpenChange={setDetailsOpen}
         data={
-          currentRequest
+          selectedRequest
             ? {
-                subject: currentRequest.subject,
-                type: currentRequest.type,
-                date: "Monday, 08:00 - 09:30", // This would come from the actual data
-                section: "C", // This would come from the actual data
-                requestedBy: "Neila Hoacine", // This would come from the actual data
-                requestedTo: "Lina Haddad", // This would come from the actual data
-                room: currentRequest.room,
-                newRoom: currentRequest.newRoom,
-                status: currentRequest.status,
+                subject: selectedRequest.from_session.module,
+                type: selectedRequest.from_session.session_type,
+                date: `${selectedRequest.from_session.week_day}, ${selectedRequest.from_session.starting_time} - ${selectedRequest.from_session.ending_time}`,
+                section: "C", // Replace with actual section if available
+                requestedBy: selectedRequest.from_session.teacher.username,
+                requestedTo: selectedRequest.to_session.teacher.username,
+                room: selectedRequest.from_session.room.room_id,
+                newRoom: selectedRequest.to_session.room.room_id,
+                status: selectedRequest.status.toLowerCase() as any,
               }
             : undefined
         }

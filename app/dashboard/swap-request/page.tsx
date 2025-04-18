@@ -5,12 +5,30 @@ import Link from "next/link";
 import { Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { SwapRequestTable } from "@/components/swap-request-table";
+import { SwapRequestTable } from "@/components/swap-request-table";  // Make sure this component can accept data as props
 import { SwapRequestFilter } from "@/components/swap-request-filter";
 import { SwapRequestDetails } from "@/components/swap-request-details";
+import { fetchswaprequest } from "@/actions/fetchswaprequest";
+import { SessionSwap } from "@/types/Session";
+import { useQuery } from "@tanstack/react-query";
 
 export default function SwapRequestPage() {
+  const { data, error, isLoading } = useQuery<SessionSwap[]>({
+    queryKey: ["swapRequests"],
+    queryFn: fetchswaprequest,
+    staleTime: 1000 * 60 * 5, 
+  });
+
   const [detailsOpen, setDetailsOpen] = useState(false);
+
+  // Handle loading and error states
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return <div>Error: {error.message}</div>;
+  }
 
   return (
     <div className="p-6">
@@ -55,7 +73,8 @@ export default function SwapRequestPage() {
         </div>
       </div>
 
-      <SwapRequestTable />
+      {/* Pass the data to SwapRequestTable */}
+      <SwapRequestTable data={data ?? []} />
     </div>
   );
 }
