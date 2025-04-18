@@ -20,12 +20,15 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={inter.className}>
+        <Providers>
         <ThemeProvider attribute="class" defaultTheme="light">
           {children}
         </ThemeProvider>
+        </Providers>
       </body>
     </html>
   );
 }
 
-import "./globals.css";
+import "./globals.css";import Providers from "@/lib/providers";
+

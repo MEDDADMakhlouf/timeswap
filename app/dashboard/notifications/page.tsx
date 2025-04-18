@@ -3,9 +3,33 @@
 import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { NotificationItem } from "@/components/notification-item";
+import { useQuery } from "@tanstack/react-query";
+import { fetchswaprequest } from "@/actions/fetchswaprequest";
+import type { SessionSwap } from "@/types/Session";
 
 export default function NotificationsPage() {
+  const { data, error, isLoading } = useQuery<SessionSwap[]>({
+    queryKey: ["swapRequests"],
+    queryFn: fetchswaprequest,
+  });
+  console.log(data);
+
   const [activeTab, setActiveTab] = useState("all");
+
+  if (error) return <div>Error: {error.message}</div>;
+  if (!data || isLoading) return <div>Loading...</div>;
+
+  // Take the last 15 swaps, assuming newest are last. Reverse if needed.
+  const recent = data.slice(-15).reverse();
+
+  const allNotifications = recent.map((swap) => ({
+    swapRequest: swap, // Pass the entire session swap request
+  }));
+
+  // Filter by tab
+  const filtered = activeTab === "all"
+    ? allNotifications
+    : allNotifications.filter((n) => n.swapRequest.status.toLowerCase() === activeTab);
 
   return (
     <div className="p-6">
@@ -18,100 +42,28 @@ export default function NotificationsPage() {
 
       <Tabs defaultValue="all" className="w-full" onValueChange={setActiveTab}>
         <TabsList className="bg-blue-50 p-1 mb-6">
-          <TabsTrigger
-            value="all"
-            className="data-[state=active]:bg-white data-[state=active]:shadow-sm rounded-md px-6"
-          >
-            All
-          </TabsTrigger>
-          <TabsTrigger
-            value="pending"
-            className="data-[state=active]:bg-white data-[state=active]:shadow-sm rounded-md px-6"
-          >
-            Pending
-          </TabsTrigger>
-          <TabsTrigger
-            value="accepted"
-            className="data-[state=active]:bg-white data-[state=active]:shadow-sm rounded-md px-6"
-          >
-            Accepted
-          </TabsTrigger>
-          <TabsTrigger
-            value="rejected"
-            className="data-[state=active]:bg-white data-[state=active]:shadow-sm rounded-md px-6"
-          >
-            Rejected
-          </TabsTrigger>
-          <TabsTrigger
-            value="alerts"
-            className="data-[state=active]:bg-white data-[state=active]:shadow-sm rounded-md px-6"
-          >
-            Alerts
-          </TabsTrigger>
+          {["all", "pending", "accepted", "rejected"].map((tab) => (
+            <TabsTrigger
+              key={tab}
+              value={tab}
+              className="data-[state=active]:bg-white data-[state=active]:shadow-sm rounded-md px-6 capitalize"
+            >
+              {tab}
+            </TabsTrigger>
+          ))}
         </TabsList>
 
-        <TabsContent value="all" className="space-y-4">
-          <NotificationItem
-            type="new"
-            title="New Swap Request"
-            message="Prof. Neila Hocini has requested to swap Physics 202 on March 26, 2025 for Computer Networks"
-            time="10 minutes ago"
-          />
-          <NotificationItem
-            type="accepted"
-            title="Swap Request Accepted"
-            message="Prof. Neila Hocini has accepted your swap request for Mathematics 101on March 26, 2025"
-            time="10 minutes ago"
-          />
-          <NotificationItem
-            type="rejected"
-            title="Swap Request Rejected"
-            message="Prof. Neila Hocini has has rejected your swap request for Computer Networks on March 2 2025"
-            time="10 minutes ago"
-          />
-          <NotificationItem
-            type="alert"
-            title="Schedule Change"
-            message="Your Algorithms class on Tuesday has been moved to Room 101D"
-            time="10 minutes ago"
-          />
-        </TabsContent>
-
-        <TabsContent value="pending" className="space-y-4">
-          <NotificationItem
-            type="new"
-            title="New Swap Request"
-            message="Prof. Neila Hocini has requested to swap Physics 202 on March 26, 2025 for Computer Networks"
-            time="10 minutes ago"
-          />
-        </TabsContent>
-
-        <TabsContent value="accepted" className="space-y-4">
-          <NotificationItem
-            type="accepted"
-            title="Swap Request Accepted"
-            message="Prof. Neila Hocini has accepted your swap request for Mathematics 101on March 26, 2025"
-            time="10 minutes ago"
-          />
-        </TabsContent>
-
-        <TabsContent value="rejected" className="space-y-4">
-          <NotificationItem
-            type="rejected"
-            title="Swap Request Rejected"
-            message="Prof. Neila Hocini has has rejected your swap request for Computer Networks on March 2 2025"
-            time="10 minutes ago"
-          />
-        </TabsContent>
-
-        <TabsContent value="alerts" className="space-y-4">
-          <NotificationItem
-            type="alert"
-            title="Schedule Change"
-            message="Your Algorithms class on Tuesday has been moved to Room 101D"
-            time="10 minutes ago"
-          />
-        </TabsContent>
+        {["all", "pending", "accepted", "rejected"].map((tab) => (
+          <TabsContent key={tab} value={tab} className="space-y-4">
+            {filtered.length === 0 ? (
+              <div className="text-gray-500">No notifications found.</div>
+            ) : (
+              filtered.map((notification) => (
+                <NotificationItem key={notification.swapRequest.id} {...notification} />
+              ))
+            )}
+          </TabsContent>
+        ))}
       </Tabs>
     </div>
   );

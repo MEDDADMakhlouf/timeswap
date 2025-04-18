@@ -1,15 +1,28 @@
-import { AlertTriangle, Check, Eye, X } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
+import { SessionSwap } from "@/types/Session";
+import { AlertTriangle, Check, Eye, X } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 
-interface NotificationItemProps {
-  type: "new" | "accepted" | "rejected" | "alert"
-  title: string
-  message: string
-  time: string
-}
+type NotificationItemProps = {
+  swapRequest: SessionSwap;
+};
 
-export function NotificationItem({ type, title, message, time }: NotificationItemProps) {
+export function NotificationItem({ swapRequest }: NotificationItemProps) {
+  const { status, from_session, to_session } = swapRequest;
+
+  const type =
+    status === "PENDING"
+      ? "new"
+      : status === "APPROVED"
+        ? "accepted"
+        : status === "REJECTED"
+          ? "rejected"
+          : "info";
+
+  const title = `Swap Request from ${from_session.module} to ${to_session.module}`;
+  const message = `You requested to swap your session on ${from_session.week_day} at ${from_session.starting_time} with one on ${to_session.week_day} at ${to_session.starting_time}`;
+  const time = new Date().toLocaleTimeString(); 
+
   return (
     <Card>
       <CardContent className="p-4">
@@ -19,10 +32,10 @@ export function NotificationItem({ type, title, message, time }: NotificationIte
               type === "new"
                 ? "bg-yellow-100 text-yellow-600"
                 : type === "accepted"
-                  ? "bg-green-100 text-green-600"
-                  : type === "rejected"
-                    ? "bg-red-100 text-red-600"
-                    : "bg-blue-100 text-blue-600"
+                ? "bg-green-100 text-green-600"
+                : type === "rejected"
+                ? "bg-red-100 text-red-600"
+                : "bg-blue-100 text-blue-600"
             }`}
           >
             {type === "new" ? (
@@ -59,6 +72,6 @@ export function NotificationItem({ type, title, message, time }: NotificationIte
         </div>
       </CardContent>
     </Card>
-  )
+  );
 }
 
