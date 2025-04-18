@@ -21,9 +21,10 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className={inter.className}>
         <Providers>
-        <ThemeProvider attribute="class" defaultTheme="light">
-          {children}
-        </ThemeProvider>
+          <ThemeProvider attribute="class" defaultTheme="light">
+            <Toaster />
+            {children}
+          </ThemeProvider>
         </Providers>
       </body>
     </html>
@@ -31,4 +32,5 @@ export default function RootLayout({
 }
 
 import "./globals.css";import Providers from "@/lib/providers";
+import { Toaster } from "@/components/ui/sonner";
 
