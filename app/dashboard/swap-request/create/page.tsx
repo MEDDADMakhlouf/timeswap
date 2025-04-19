@@ -273,31 +273,32 @@ function NewFunctionStep3(
     <div className="space-y-6">
       <h2 className="text-xl font-semibold mb-4">Confirm Your Swap Request</h2>
 
-      <div className="border rounded-lg bg-gray-50  overflow-hidden">
-        <div className="grid grid-cols-2 gap-4 p-4 bg-[#C4D9FC] ">
-          <div className="font-medium ">Current Session</div>
-          <div className="font-medium  ">Requested Change</div>
+      <div className="border rounded-lg bg-white overflow-hidden shadow-sm">
+        {/* Header Row */}
+        <div className="grid grid-cols-2 items-stretch bg-[#C4D9FC] text-[#0334BC] text-sm font-medium">
+          <div className="p-4 border-r border-[#E4E4E7]">Current Session</div>
+          <div className="p-4">Requested Change</div>
         </div>
 
-        {/* Subject row - always the same */}
-        <div className="grid grid-cols-2 p-4 ">
-          <div className="flex items-center gap-2">
+        {/* Subject row */}
+        <div className="grid grid-cols-2 items-stretch border-t border-[#E4E4E7] text-sm">
+          <div className="p-4 border-r border-[#E4E4E7] flex gap-2">
             <span className="font-medium">Subject:</span>
             <span>{currentSession.subject}</span>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="p-4 flex gap-2">
             <span className="font-medium">Subject:</span>
             <span>{currentSession.subject}</span>
           </div>
         </div>
 
-        {/* Day row - changes only if swapChoice is "both" or "time" */}
-        <div className="grid grid-cols-2 p-4 ">
-          <div className="flex items-center gap-2">
+        {/* Day row */}
+        <div className="grid grid-cols-2 items-stretch border-t border-[#E4E4E7] text-sm">
+          <div className="p-4 border-r border-[#E4E4E7] flex gap-2">
             <span className="font-medium">Day:</span>
             <span>{currentSession.day}</span>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="p-4 flex gap-2">
             <span className="font-medium">New Day:</span>
             <span>
               {swapChoice === "room" ? currentSession.day : selectedDay}
@@ -305,13 +306,13 @@ function NewFunctionStep3(
           </div>
         </div>
 
-        {/* T ime row - changes only if swapChoice is "both" or "time" */}
-        <div className="grid grid-cols-2 gap-4 mb-2">
-          <div className="flex items-center gap-2">
+        {/* Time row */}
+        <div className="grid grid-cols-2 items-stretch border-t border-[#E4E4E7] text-sm">
+          <div className="p-4 border-r border-[#E4E4E7] flex gap-2">
             <span className="font-medium">Time:</span>
             <span>{currentSession.time}</span>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="p-4 flex gap-2">
             <span className="font-medium">New Time:</span>
             <span>
               {swapChoice === "room" ? currentSession.time : selectedTime}
@@ -319,13 +320,13 @@ function NewFunctionStep3(
           </div>
         </div>
 
-        {/* Room row - changes only if swapChoice is "both" or "room" */}
-        <div className="grid grid-cols-2 gap-4 mb-2">
-          <div className="flex items-center gap-2">
+        {/* Room row */}
+        <div className="grid grid-cols-2 items-stretch border-t border-[#E4E4E7] text-sm">
+          <div className="p-4 border-r border-[#E4E4E7] flex gap-2">
             <span className="font-medium">Room:</span>
             <span>{currentSession.room}</span>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="p-4 flex gap-2">
             <span className="font-medium">New Room:</span>
             <span>
               {swapChoice === "time"
@@ -337,28 +338,28 @@ function NewFunctionStep3(
           </div>
         </div>
 
-        {/* Section row - doesn't change */}
-        <div className="grid grid-cols-2 gap-4 mb-2">
-          <div className="flex items-center gap-2">
+        {/* Section row */}
+        <div className="grid grid-cols-2 items-stretch border-t border-[#E4E4E7] text-sm">
+          <div className="p-4 border-r border-[#E4E4E7] flex gap-2">
             <span className="font-medium">Section:</span>
             <span>{currentSession.section}</span>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="p-4 flex gap-2">
             <span className="font-medium">Section:</span>
             <span>{currentSession.section}</span>
           </div>
         </div>
 
-        {/* Reason section */}
+        {/* Reason row */}
         {reason && (
-          <div className="pt-2 border-t">
+          <div className="border-t border-[#E4E4E7] p-4 text-sm">
             <div className="font-medium mb-1">Reason for request:</div>
             <div className="text-gray-700">{reason}</div>
           </div>
         )}
       </div>
 
-      {/* Action buttons */}
+      {/* Buttons */}
       <div className="flex justify-end gap-4 mt-6">
         <Button variant="outline" onClick={() => setStep(2)}>
           Back
@@ -366,7 +367,7 @@ function NewFunctionStep3(
         <Button variant="outline">Cancel</Button>
         <Button
           onClick={handleSubmitRequest}
-          className="bg-[#0334BC8F] px-4 py-2 rounded-sm text-white"
+          className="bg-[#0334BC] hover:bg-[#02289d] text-white px-4 py-2 rounded-sm"
         >
           Submit Request
         </Button>
