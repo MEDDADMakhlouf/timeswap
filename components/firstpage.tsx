@@ -1,6 +1,8 @@
 "use client";
 import { useState } from 'react';
 import { Button } from './ui/button';
+import { SwapRequest } from '@/types/swap';
+import { FetchSession } from '@/actions/fetchsession';
 
 export default function Firstpage() {
   const [selectedDay, setSelectedDay] = useState('');
@@ -8,20 +10,30 @@ export default function Firstpage() {
   const [selectedType, setSelectedType] = useState('');
 
   const handleNextStep = () => {
+    if (!selectedDay || !selectedTime || !selectedType) {
+      alert('Please select all fields');
+      return;
+    }
     const sessionData = {
       day: selectedDay,
       time: selectedTime,
       type: selectedType,
     };
+     const start_time = selectedTime.split('-')[0];
+     const end_time = selectedTime.split('-')[1];
+     const data:SwapRequest={
+      session_type: selectedType,
+      start_time: start_time,
+      end_time: end_time,
+      week_day: selectedDay,
+     }
+      const Response=FetchSession(data)
+        console.log(Response)
+
 
     console.log('Sending to backend:', sessionData);
 
-    // Example: sending the data
-    // fetch('/api/session', {
-    //   method: 'POST',
-    //   headers: { 'Content-Type': 'application/json' },
-    //   body: JSON.stringify(sessionData),
-    // });
+   
   };
 
   const handleCancel = () => {
