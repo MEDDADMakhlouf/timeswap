@@ -2,7 +2,7 @@ import { SessionSwap } from "@/types/Session";
 
 export const fetchswaprequest = async (): Promise<SessionSwap[]> => {
     try {
-      const response = await fetch("http://127.0.0.1:8004/api/v0/ntoif/", {
+      const response = await fetch("http://127.0.0.1:8000/api/v0/ntoif/", {
         method: "GET", 
         mode: "cors", 
         headers: {
