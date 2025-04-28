@@ -5,38 +5,68 @@ import Link from "next/link";
 import { Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { SwapRequestTable } from "@/components/swap-request-table";  // Make sure this component can accept data as props
+import { SwapRequestTable } from "@/components/swap-request-table"; // Make sure this component can accept data as props
 import { SwapRequestFilter } from "@/components/swap-request-filter";
 import { SwapRequestDetails } from "@/components/swap-request-details";
 import { fetchswaprequest } from "@/actions/fetchswaprequest";
 import { SessionSwap } from "@/types/Session";
 import { useQuery } from "@tanstack/react-query";
+import { UserAvatar } from "@/components/user-avatar";
 
 export default function SwapRequestPage() {
   const { data, error, isLoading } = useQuery<SessionSwap[]>({
     queryKey: ["swapRequests"],
     queryFn: fetchswaprequest,
-    staleTime: 1000 * 60 * 5, 
+    staleTime: 1000 * 60 * 5,
   });
 
   const [detailsOpen, setDetailsOpen] = useState(false);
 
   // Handle loading and error states
   if (isLoading) {
-    return <div>Loading...</div>;
+    return (
+      <div>
+        <div className="mb-6 p-6 flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-bold mb-1">Swap Request </h1>
+            <p className="text-gray-500">
+              Request, View and search your past swap request{" "}
+            </p>
+          </div>
+          <UserAvatar name="Naila Houacine" image="" className="" />
+        </div>
+        <div>Loading...</div>
+      </div>
+    );
   }
 
   if (error) {
-    return <div>Error: {error.message}</div>;
+    return (
+      <div>
+        <div className="mb-6 p-6 flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-bold mb-1">Swap Request </h1>
+            <p className="text-gray-500">
+              Request, View and search your past swap request{" "}
+            </p>
+          </div>
+          <UserAvatar name="Naila Houacine" image="" className="" />
+        </div>
+        <div>Error: {error.message}</div>
+      </div>
+    );
   }
 
   return (
     <div className="p-6">
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold mb-1">Swap Request</h1>
-        <p className="text-gray-500">
-          Request, View and search your past swap requests
-        </p>
+      <div className="mb-6 flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold mb-1">Swap Request </h1>
+          <p className="text-gray-500">
+            Request, View and search your past swap request{" "}
+          </p>
+        </div>
+        <UserAvatar name="Naila Houacine" image="" className="" />
       </div>
 
       <div className="flex flex-col md:flex-row gap-4 mb-6 items-start md:items-center">
