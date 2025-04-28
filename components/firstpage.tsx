@@ -1,53 +1,58 @@
 "use client";
 import { useState } from 'react';
 import { Button } from './ui/button';
-import { SwapRequest } from '@/types/swap';
+import { SessionResponse, SwapRequest } from '@/types/swap';
 import { FetchSession } from '@/actions/fetchsession';
 
 export default function Firstpage() {
   const [selectedDay, setSelectedDay] = useState('');
   const [selectedTime, setSelectedTime] = useState('');
   const [selectedType, setSelectedType] = useState('');
+  const [sessions, setSessions] = useState<SessionResponse[]>([]); // 👈 NEW STATE
+  const [selectedSessionId, setSelectedSessionId] = useState<number | null>(null); // 👈 for selecting a session
 
   const handleNextStep = () => {
     if (!selectedDay || !selectedTime || !selectedType) {
       alert('Please select all fields');
       return;
     }
-    const sessionData = {
-      day: selectedDay,
-      time: selectedTime,
-      type: selectedType,
-    };
-     const start_time = selectedTime.split('-')[0];
-     const end_time = selectedTime.split('-')[1];
-     const data:SwapRequest={
+
+    const start_time = selectedTime.split('-')[0];
+    const end_time = selectedTime.split('-')[1];
+    const data: SwapRequest = {
       session_type: selectedType,
-      start_time: start_time,
-      end_time: end_time,
+      start_time,
+      end_time,
       week_day: selectedDay,
-     }
-      const Response=FetchSession(data)
-        console.log(Response)
+    };
 
-
-    console.log('Sending to backend:', sessionData);
-
-   
+    FetchSession(data)
+      .then((response) => {
+        console.log(response);
+        setSessions(response); 
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
   };
 
   const handleCancel = () => {
     setSelectedDay('');
     setSelectedTime('');
     setSelectedType('');
+    setSessions([]); 
+    setSelectedSessionId(null);
   };
 
   return (
-    <div className="flex flex-col  min-h-screen p-4"> 
-      <h1 className="text-2xl font-bold mb-4">Choose Your Session</h1> 
-      <div className="grid grid-cols-2 gap-4 mb-6"> 
+    <div className="flex flex-col min-h-screen p-4">
+      <h1 className="text-2xl font-bold mb-4">Choose Your Session</h1>
+
+    
+      <div className="grid grid-cols-2 gap-4 mb-6">
+      
         <select
-          className="px-4 py-2 min-w-[150px] rounded-md bg-white border text-lg" 
+          className="px-4 py-2 min-w-[150px] rounded-md bg-white border text-lg"
           value={selectedDay}
           onChange={(e) => setSelectedDay(e.target.value)}
         >
@@ -61,8 +66,9 @@ export default function Firstpage() {
           <option value="SATURDAY">Saturday</option>
         </select>
 
+       
         <select
-          className="px-4 py-2 min-w-[150px] rounded-md bg-white border text-lg" 
+          className="px-4 py-2 min-w-[150px] rounded-md bg-white border text-lg"
           value={selectedTime}
           onChange={(e) => setSelectedTime(e.target.value)}
         >
@@ -76,8 +82,9 @@ export default function Firstpage() {
         </select>
       </div>
 
+     
       <select
-        className="px-4 py-2 min-w-[300px]  rounded-md bg-white border text-lg mb-6" 
+        className="px-4 py-2 min-w-[300px] rounded-md bg-white border text-lg mb-6"
         value={selectedType}
         onChange={(e) => setSelectedType(e.target.value)}
       >
@@ -87,11 +94,12 @@ export default function Firstpage() {
         <option value="TP">TP</option>
       </select>
 
-      <div className="flex gap-4 mt-4 justify-end "> 
+    
+      <div className="flex gap-4 mt-4 justify-end">
         <Button
           onClick={handleNextStep}
           style={{ backgroundColor: '#0334BC' }}
-          className="px-6 py-2  text-white font-bold rounded-md hover:bg-blue-700"
+          className="px-6 py-2 text-white font-bold rounded-md hover:bg-blue-700"
         >
           Next Step
         </Button>
@@ -99,12 +107,32 @@ export default function Firstpage() {
         <Button
           onClick={handleCancel}
           variant={"ghost"}
-            className="px-6 py-2  text-black   border-[1px]  font-bold rounded-md "
-         
+          className="px-6 py-2 text-black border-[1px] font-bold rounded-md"
         >
           Cancel
         </Button>
       </div>
+
+      {sessions.length > 0 && (
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-10">
+          {sessions.map((session) => (
+            <div
+              key={session.id}
+              onClick={() => setSelectedSessionId(session.id)}
+              className={`border rounded-lg p-4 cursor-pointer transition-all ${
+                selectedSessionId === session.id ? 'border-blue-600 shadow-lg' : 'border-gray-300'
+              }`}
+            >
+              <h2 className="text-xl font-bold">{session.module}</h2>
+              <p>Teacher: {session.teacher.username}</p>
+              <p>Room: {session.room.room_id}</p>
+              <p>Time: {session.starting_time} - {session.ending_time}</p>
+              <p>Type: {session.session_type}</p>
+              <p>Day: {session.week_day}</p>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
