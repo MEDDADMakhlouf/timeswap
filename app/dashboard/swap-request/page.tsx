@@ -12,6 +12,17 @@ import { fetchswaprequest } from "@/actions/fetchswaprequest";
 import { SessionSwap } from "@/types/Session";
 import { useQuery } from "@tanstack/react-query";
 import { UserAvatar } from "@/components/user-avatar";
+import { Skeleton } from "@/components/ui/skeleton";
+
+function SwapRequestTableSkeleton() {
+  return (
+    <div className="space-y-4">
+      {Array.from({ length: 5 }).map((_, index) => (
+        <Skeleton key={index} className="h-10 w-full rounded" />
+      ))}
+    </div>
+  );
+}
 
 export default function SwapRequestPage() {
   const { data, error, isLoading } = useQuery<SessionSwap[]>({
@@ -25,7 +36,7 @@ export default function SwapRequestPage() {
   // Handle loading and error states
   if (isLoading) {
     return (
-      <div>
+      <div className="p-6">
         <div className="mb-6 p-6 flex items-center justify-between">
           <div>
             <h1 className="text-2xl font-bold mb-1">Swap Request </h1>
@@ -35,14 +46,25 @@ export default function SwapRequestPage() {
           </div>
           <UserAvatar name="Naila Houacine" image="" className="" />
         </div>
-        <div>Loading...</div>
+        <div className="flex flex-col md:flex row gap-4 mb-6 items-start md:items-start">
+          <div className="relative flex-1">
+            <Skeleton className="h-10 w-full rounded pl-9" />
+          </div>
+          <div className="flex gap-4">
+            <Skeleton className="h-10 w-32 rounded" />
+            <Skeleton className="h-10 w-32 rounded" />
+            <Skeleton className="h-10 w-32 rounded" />
+          </div>
+        </div>
+        {/* <div>Loading...</div> */}
+        <SwapRequestTableSkeleton />
       </div>
     );
   }
 
   if (error) {
     return (
-      <div>
+      <div className="p-6">
         <div className="mb-6 p-6 flex items-center justify-between">
           <div>
             <h1 className="text-2xl font-bold mb-1">Swap Request </h1>
