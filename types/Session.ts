@@ -34,4 +34,6 @@ export type SessionSwap = {
   to_session: Session;
   status: "PENDING" | "REJECTED" | "APPROVED";
 };
+ export type NewSwapRequest = Omit<SessionSwap, 'id' | 'status'>;
+
 

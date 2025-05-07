@@ -1,19 +1,18 @@
-import { SwapRequest } from "@/types/swap";
-import  { SessionResponse } from "@/types/swap";
+import { SessionResponse, SwapRequest } from "@/types/swap";
 
-export const FetchSession = async (data: SwapRequest): Promise<SessionResponse[]> => {
+export const FetchSession = async (): Promise<SessionResponse[]> => {
     try {
         
-        const response = await fetch(`http://127.0.0.1:8000/api/v0/available/`,
+        const response = await fetch(`http://127.0.0.1:8000/api/v0/urschedule/`,
         {
-        method: "POST", 
+        method: "GET", 
           mode: "cors", 
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify(data)
+         
         });
-        console.log(JSON.stringify(data))
+    
         console.log(response)
     
         if (!response.ok) {
@@ -29,4 +28,3 @@ export const FetchSession = async (data: SwapRequest): Promise<SessionResponse[]
      
 
 }
-

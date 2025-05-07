@@ -3,13 +3,39 @@ import { useState } from 'react';
 import { Button } from './ui/button';
 import { SessionResponse, SwapRequest } from '@/types/swap';
 import { FetchSession } from '@/actions/fetchsession';
+import { NewSwapRequest, Session} from '@/types/Session';
+import { GetSection } from '@/actions/checkursession';
+import { Check } from 'lucide-react';
+interface FirstpageProps {
+  phase: number;
+  setPhase: React.Dispatch<React.SetStateAction<number>>;
+  settosession: React.Dispatch<React.SetStateAction<SessionResponse | null>>;
+  setfromsession: React.Dispatch<React.SetStateAction<SessionResponse | null>>;
+}
+export default function Firstpage(props: FirstpageProps) {
 
-export default function Firstpage() {
   const [selectedDay, setSelectedDay] = useState('');
   const [selectedTime, setSelectedTime] = useState('');
   const [selectedType, setSelectedType] = useState('');
-  const [sessions, setSessions] = useState<SessionResponse[]>([]); // 👈 NEW STATE
-  const [selectedSessionId, setSelectedSessionId] = useState<number | null>(null); // 👈 for selecting a session
+  const [sessions, setSessions] = useState<SessionResponse[]>([]);
+  const [selectedSessionId, setSelectedSessionId] = useState<number | null>(null);
+  const [selectedSession, setSelectedSession] = useState<SessionResponse | null>(null);
+  
+  const [presssed ,setpresssed]=useState(true);
+  const handleMoveForward=(id:Number)=>{
+     
+    props.setPhase(props.phase+1);
+     const session: SessionResponse | undefined = sessions.find((session) => session.id === id);
+     props.settosession(session || null);
+     props.setfromsession(selectedSession || null);
+
+    }
+
+ 
+
+   
+    
+  
 
   const handleNextStep = () => {
     if (!selectedDay || !selectedTime || !selectedType) {
@@ -34,6 +60,19 @@ export default function Firstpage() {
       .catch((error) => {
         console.error("Error:", error);
       });
+        GetSection(data)
+      .then((response) => {
+        console.log(response);
+
+      })
+      setpresssed(false);
+      GetSection(data)
+      .then((response) => {
+        console.log(response);
+        setSelectedSession(response[1])
+      }).catch((error) => {
+        console.error("Error:", error);
+      })
   };
 
   const handleCancel = () => {
@@ -42,6 +81,7 @@ export default function Firstpage() {
     setSelectedType('');
     setSessions([]); 
     setSelectedSessionId(null);
+    setpresssed(true)
   };
 
   return (
@@ -95,7 +135,7 @@ export default function Firstpage() {
       </select>
 
     
-      <div className="flex gap-4 mt-4 justify-end">
+     {presssed? <div className="flex gap-4 mt-4 justify-end">
         <Button
           onClick={handleNextStep}
           style={{ backgroundColor: '#0334BC' }}
@@ -111,7 +151,12 @@ export default function Firstpage() {
         >
           Cancel
         </Button>
-      </div>
+      </div>:
+      <div>
+        heyy
+        </div>
+
+}
 
       {sessions.length > 0 && (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-10">
@@ -129,10 +174,25 @@ export default function Firstpage() {
               <p>Time: {session.starting_time} - {session.ending_time}</p>
               <p>Type: {session.session_type}</p>
               <p>Day: {session.week_day}</p>
+
             </div>
+            
+            // todo:sessioncard
           ))}
+        </div>
+      )}
+      {selectedSessionId && (
+        <div className="mt-4">
+          <Button
+            onClick={() => handleMoveForward(selectedSessionId)}
+            style={{ backgroundColor: '#0334BC' }}
+            className="px-6 py-2 text-white font-bold rounded-md hover:bg-blue-700"
+          >
+            Move Forward
+          </Button>
         </div>
       )}
     </div>
   );
+
 }
