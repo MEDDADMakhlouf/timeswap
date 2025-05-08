@@ -1,6 +1,12 @@
+
 import React from 'react';
 import { SessionResponse } from '@/types/swap';
 import { Button } from './ui/button';
+import { CreateSwapRequest } from '@/actions/createswaprequest';
+import { NewswapRequest, NewSwapRequest, Session } from '@/types/Session';
+
+import { useRouter } from 'next/navigation';
+
 
 interface SecondpageProps {
   phase: number;
@@ -12,6 +18,7 @@ interface SecondpageProps {
 }
 
 export default function SecondPage(props: SecondpageProps) {
+  const router = useRouter();
   const { phase, setPhase, fromsession, tosession } = props;
 
   const handleBack = () => {
@@ -21,7 +28,25 @@ export default function SecondPage(props: SecondpageProps) {
   const handleConfirm = () => {
    
     console.log('Confirmed swap:', { fromsession, tosession });
-    setPhase(phase + 1);
+
+    const newswaprequest: NewswapRequest = {
+      from_session:fromsession?.id as number,
+      to_session: tosession?.id as number,
+    }; 
+
+    CreateSwapRequest(newswaprequest)
+      .then((response) => {
+        console.log(response);
+        setPhase(phase + 1);
+        router.push('/dashboard/swap-request');
+        
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+      });
+
+
+   
   };
 
   const renderSession = (session: SessionResponse | null, label: string) => {
