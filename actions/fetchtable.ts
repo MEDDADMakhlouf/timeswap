@@ -1,9 +1,10 @@
 import { SessionResponse, SwapRequest } from "@/types/swap";
+import { Ursession } from "@/types/table";
 
-export const FetchSession = async (): Promise<SessionResponse[]> => {
+export const Fetchschedule = async (): Promise<Ursession[]> => {
     try {
         
-        const response = await fetch(`http://127.0.0.1:8000/api/v0/urschedule/`,
+        const response = await fetch(`http://127.0.0.1:8000/api/v0/urtimeschedule/`,
         {
         method: "GET", 
           mode: "cors", 
@@ -18,7 +19,7 @@ export const FetchSession = async (): Promise<SessionResponse[]> => {
         if (!response.ok) {
           throw new Error("Network response was not ok");
         }
-        const responseData = (await response.json()) as SessionResponse[];
+        const responseData = (await response.json()) as Ursession[];
         console.log(responseData)
         return  responseData;
       } catch (error) {
