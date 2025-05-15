@@ -15,7 +15,7 @@ import {
   RefreshCw,
   Users,
 } from "lucide-react"
-import { useState } from "react"
+import { useRef, useState } from "react"
 
 export default function HomePage() {
   return (
@@ -217,20 +217,15 @@ const FeaturesSection = () => {
 
         <div className="grid md:grid-cols-3 gap-8">
           {features.map((feature, index) => (
-            <motion.div
-              key={index}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.2 * index, duration: 0.6 }}
-              className="bg-blue-50 rounded-xl p-6 text-center hover:shadow-md transition-shadow"
-            >
-              <div className="bg-white rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4 shadow-sm">
-                {feature.icon}
+            <CardSpotlight key={index} index={index}>
+              <div className="bg-white rounded-xl p-6 text-center h-full">
+                <div className="bg-blue-50 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4 shadow-sm">
+                  {feature.icon}
+                </div>
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">{feature.title}</h3>
+                <p className="text-gray-600">{feature.description}</p>
               </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">{feature.title}</h3>
-              <p className="text-gray-600">{feature.description}</p>
-            </motion.div>
+            </CardSpotlight>
           ))}
         </div>
       </div>
@@ -238,41 +233,56 @@ const FeaturesSection = () => {
   )
 }
 
-const HowItWorksSection = () => {
-  const steps = [
-    {
-      number: "01",
-      title: "Create Your Account",
-      description: "Sign up and set up your profile with your availability preferences.",
-      icon: <Users className="h-6 w-6 text-white" />,
-    },
-    {
-      number: "02",
-      title: "Set Up Your Schedule",
-      description: "Input your current timetable and mark your preferred time slots.",
-      icon: <Calendar className="h-6 w-6 text-white" />,
-    },
-    {
-      number: "03",
-      title: "Request Swaps",
-      description: "Easily request schedule swaps with other users when needed.",
-      icon: <RefreshCw className="h-6 w-6 text-white" />,
-    },
-    {
-      number: "04",
-      title: "Manage Notifications",
-      description: "Receive and respond to swap requests in real-time.",
-      icon: <MessageSquare className="h-6 w-6 text-white" />,
-    },
-  ]
+const CardSpotlight = ({ children, index = 0 }) => {
+  const [isMobile] = useState(false)
+  const cardRef = useRef(null)
+  const [position, setPosition] = useState({ x: 0, y: 0 })
+  const [opacity, setOpacity] = useState(0)
+
+  const handleMouseMove = (e) => {
+    if (!cardRef.current || isMobile) return
+
+    const card = cardRef.current
+    const rect = card.getBoundingClientRect()
+
+    setPosition({
+      x: e.clientX - rect.left,
+      y: e.clientY - rect.top,
+    })
+    setOpacity(1)
+  }
+
+  const handleMouseLeave = () => {
+    setOpacity(0)
+  }
 
   return (
-    <section className="py-20 bg-blue-50 relative overflow-hidden">
-  
-      <div className="absolute top-0 right-0 w-64 h-64 bg-blue-100 rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl opacity-70" />
-      <div className="absolute bottom-0 left-0 w-64 h-64 bg-blue-100 rounded-full translate-y-1/2 -translate-x-1/2 blur-3xl opacity-70" />
+    <motion.div
+      ref={cardRef}
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ delay: 0.2 * index, duration: 0.6 }}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+      className="relative rounded-xl overflow-hidden"
+    >
+      <div
+        className="pointer-events-none absolute -inset-px opacity-0 transition duration-300"
+        style={{
+          opacity,
+          background: `radial-gradient(600px circle at ${position.x}px ${position.y}px, rgba(59, 130, 246, 0.15), transparent 40%)`,
+        }}
+      />
+      {children}
+    </motion.div>
+  )
+}
 
-      <div className="container px-4 mx-auto relative z-10">
+const HowItWorksSection = () => {
+  return (
+    <section className="py-20 bg-gray-50">
+      <div className="container px-4 mx-auto">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -280,57 +290,102 @@ const HowItWorksSection = () => {
           transition={{ duration: 0.6 }}
           className="text-center mb-16"
         >
-          <h2 className="text-3xl font-bold text-gray-900 mb-4">How TimeSwap Works</h2>
+          <h2 className="text-3xl font-bold text-gray-900 mb-4">How It Works</h2>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Our simple four-step process makes schedule management a breeze.
+            Learn how to streamline your scheduling process with TimeSwap in just a few simple steps.
           </p>
         </motion.div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-          {steps.map((step, index) => (
-            <motion.div
-              key={index}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.2 * index, duration: 0.6 }}
-              className="relative"
-            >
-              <div className="bg-white rounded-xl p-8 h-full shadow-sm hover:shadow-md transition-shadow relative z-10">
-                <div className="absolute -top-5 -left-5 bg-blue-600 rounded-full w-12 h-12 flex items-center justify-center shadow-md">
-                  {step.icon}
-                </div>
-                <div className="text-5xl font-bold text-blue-100 mb-4">{step.number}</div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">{step.title}</h3>
-                <p className="text-gray-600">{step.description}</p>
-              </div>
+        <div className="grid md:grid-cols-3 gap-8">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="text-center"
+          >
+            <div className="bg-blue-50 rounded-full w-24 h-24 flex items-center justify-center mx-auto mb-4">
+              <svg
+                className="w-10 h-10 text-blue-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7 1.274 4.057-1.512 9-5.458 9-3.947 0-6.734-4.943-8.008-9z"
+                />
+              </svg>
+            </div>
+            <h3 className="text-xl font-semibold text-gray-900 mb-2">View Schedule</h3>
+            <p className="text-gray-600">
+              Easily view your current schedule and identify potential swap opportunities.
+            </p>
+          </motion.div>
 
-              {index < steps.length - 1 && (
-                <div className="hidden lg:block absolute top-1/2 right-0 w-full h-0.5 bg-blue-200 translate-x-1/2 z-0">
-                  <div className="absolute right-0 top-1/2 w-3 h-3 rounded-full bg-blue-400 -translate-y-1/2 translate-x-1/2" />
-                </div>
-              )}
-            </motion.div>
-          ))}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.4 }}
+            className="text-center"
+          >
+            <div className="bg-blue-50 rounded-full w-24 h-24 flex items-center justify-center mx-auto mb-4">
+              <svg
+                className="w-10 h-10 text-blue-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M8 7h12m0 0l-4-4m4 4l-4 4m-3 1h.01M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4m5 3h5a2 2 0 012 2v10a2 2 0 01-2 2h-5m-1-1l-5-5v2a2 2 0 00-2 2H5a2 2 0 01-2-2v-2"
+                />
+              </svg>
+            </div>
+            <h3 className="text-xl font-semibold text-gray-900 mb-2">Request Swap</h3>
+            <p className="text-gray-600">Submit a swap request to another user and wait for their approval.</p>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.6 }}
+            className="text-center"
+          >
+            <div className="bg-blue-50 rounded-full w-24 h-24 flex items-center justify-center mx-auto mb-4">
+              <svg
+                className="w-10 h-10 text-blue-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+              </svg>
+            </div>
+            <h3 className="text-xl font-semibold text-gray-900 mb-2">Confirm & Update</h3>
+            <p className="text-gray-600">Once approved, your schedule is automatically updated in the system.</p>
+          </motion.div>
         </div>
-
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ delay: 0.8, duration: 0.6 }}
-          className="mt-16 text-center"
-        >
-          <Link href="/dashboard">
-            <Button size="lg" className="bg-blue-600 hover:bg-blue-700 text-white">
-              Get Started Today
-            </Button>
-          </Link>
-        </motion.div>
       </div>
     </section>
   )
 }
+
 
 const TestimonialsSection = () => {
   const testimonials = [
@@ -340,6 +395,7 @@ const TestimonialsSection = () => {
       author: "Dr. Sarah Johnson",
       role: "Department Chair, State University",
       avatar: "/placeholder.svg?height=80&width=80",
+      highlight: "40% reduction in administrative overhead",
     },
     {
       content:
@@ -347,6 +403,7 @@ const TestimonialsSection = () => {
       author: "Michael Chen",
       role: "Teaching Assistant, Tech Institute",
       avatar: "/placeholder.svg?height=80&width=80",
+      highlight: "Hours saved with just a few clicks",
     },
     {
       content:
@@ -354,6 +411,7 @@ const TestimonialsSection = () => {
       author: "Prof. Emily Rodriguez",
       role: "Professor, Liberal Arts College",
       avatar: "/placeholder.svg?height=80&width=80",
+      highlight: "Real-time schedule management",
     },
   ]
 
@@ -381,21 +439,36 @@ const TestimonialsSection = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: 0.2 * index, duration: 0.6 }}
-              className="bg-blue-50 rounded-xl p-8 relative"
+              whileHover={{
+                y: -5,
+                boxShadow: "0 10px 25px -5px rgba(59, 130, 246, 0.1), 0 8px 10px -6px rgba(59, 130, 246, 0.1)",
+              }}
+              className="bg-gradient-to-br from-blue-50 to-white rounded-xl p-8 relative border border-blue-100"
             >
+              {/* Animated highlight */}
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.5 + 0.2 * index, duration: 0.6 }}
+                className="absolute -top-4 left-4 right-4 bg-blue-600 text-white text-sm font-medium py-1 px-3 rounded-full text-center"
+              >
+                {testimonial.highlight}
+              </motion.div>
+
               {/* Quote mark decoration */}
               <div className="absolute top-4 right-4 text-6xl leading-none text-blue-200 font-serif">"</div>
 
-              <p className="text-gray-700 mb-6 relative z-10">{testimonial.content}</p>
+              <p className="text-gray-700 mb-6 relative z-10 mt-4">{testimonial.content}</p>
 
               <div className="flex items-center">
-                <div className="mr-4">
+                <div className="mr-4 relative">
+                  <div className="absolute inset-0 bg-blue-200 rounded-full blur-sm opacity-70 animate-pulse" />
                   <Image
                     src={testimonial.avatar || "/placeholder.svg"}
                     alt={testimonial.author}
                     width={50}
                     height={50}
-                    className="rounded-full"
+                    className="rounded-full relative z-10"
                   />
                 </div>
                 <div>
@@ -410,7 +483,6 @@ const TestimonialsSection = () => {
     </section>
   )
 }
-
 const PricingSection = () => {
   const plans = [
     {
