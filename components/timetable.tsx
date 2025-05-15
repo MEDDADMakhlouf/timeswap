@@ -79,7 +79,7 @@ export function Timetable() {
         : "bg-red-100";
 
     return (
-      <div className={`p-2 ${ bgColorClass} rounded-md h-full flex flex-col`}>
+      <div className={`p-2 ${ bgColorClass} rounded-md h-full flex flex-col hover:opacity-80 translate-x-1 transition-transform`}>
         <div className="font-medium text-sm">{classData.module}</div>
         {classData.room && (
           <div className="text-xs text-gray-600">Room {classData.room}</div>
