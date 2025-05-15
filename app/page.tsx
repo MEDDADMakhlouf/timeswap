@@ -34,13 +34,13 @@ export default function HomePage() {
 const HeroSection = () => {
   return (
     <section className="relative overflow-hidden pt-20 pb-16 md:pt-32 md:pb-24">
-      {/* Animated background elements */}
+     
       <div className="absolute inset-0 -z-10">
         <div className="absolute top-1/4 left-1/4 h-64 w-64 rounded-full bg-blue-100 blur-3xl opacity-60" />
         <div className="absolute bottom-1/3 right-1/3 h-96 w-96 rounded-full bg-blue-200 blur-3xl opacity-40" />
       </div>
 
-      {/* Animated dots */}
+  
       <div className="absolute inset-0 -z-10">
         {Array.from({ length: 20 }).map((_, i) => (
           <motion.div
@@ -148,12 +148,12 @@ const HeroSection = () => {
                 />
               </motion.div>
 
-              {/* Decorative elements */}
+          
               <div className="absolute -bottom-3 -right-3 h-24 w-24 bg-blue-100 rounded-full blur-xl opacity-70" />
               <div className="absolute -top-3 -left-3 h-16 w-16 bg-blue-200 rounded-full blur-xl opacity-70" />
             </div>
 
-            {/* Floating badges */}
+           
             <motion.div
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
@@ -268,7 +268,7 @@ const HowItWorksSection = () => {
 
   return (
     <section className="py-20 bg-blue-50 relative overflow-hidden">
-      {/* Background decorations */}
+  
       <div className="absolute top-0 right-0 w-64 h-64 bg-blue-100 rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl opacity-70" />
       <div className="absolute bottom-0 left-0 w-64 h-64 bg-blue-100 rounded-full translate-y-1/2 -translate-x-1/2 blur-3xl opacity-70" />
 
@@ -305,7 +305,6 @@ const HowItWorksSection = () => {
                 <p className="text-gray-600">{step.description}</p>
               </div>
 
-              {/* Connector line between steps (except last one) */}
               {index < steps.length - 1 && (
                 <div className="hidden lg:block absolute top-1/2 right-0 w-full h-0.5 bg-blue-200 translate-x-1/2 z-0">
                   <div className="absolute right-0 top-1/2 w-3 h-3 rounded-full bg-blue-400 -translate-y-1/2 translate-x-1/2" />
