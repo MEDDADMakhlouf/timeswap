@@ -4,18 +4,9 @@ import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import Image from "next/image"
 import { motion } from "framer-motion"
-import {
-  ArrowRight,
-  Calendar,
-  Check,
-  Clock,
-  CreditCard,
-  HelpCircle,
-  MessageSquare,
-  RefreshCw,
-  Users,
-} from "lucide-react"
+import { ArrowRight, Calendar, Clock, HelpCircle, MessageSquare, RefreshCw } from "lucide-react"
 import { useRef, useState } from "react"
+import { ChatBot } from "@/components/chat-bot"
 
 export default function HomePage() {
   return (
@@ -24,9 +15,9 @@ export default function HomePage() {
       <FeaturesSection />
       <HowItWorksSection />
       <TestimonialsSection />
-    
       <FaqSection />
       <ContactSection />
+      <ChatBot />
     </div>
   )
 }
@@ -34,13 +25,11 @@ export default function HomePage() {
 const HeroSection = () => {
   return (
     <section className="relative overflow-hidden pt-20 pb-16 md:pt-32 md:pb-24">
-     
       <div className="absolute inset-0 -z-10">
         <div className="absolute top-1/4 left-1/4 h-64 w-64 rounded-full bg-blue-100 blur-3xl opacity-60" />
         <div className="absolute bottom-1/3 right-1/3 h-96 w-96 rounded-full bg-blue-200 blur-3xl opacity-40" />
       </div>
 
-  
       <div className="absolute inset-0 -z-10">
         {Array.from({ length: 20 }).map((_, i) => (
           <motion.div
@@ -148,12 +137,10 @@ const HeroSection = () => {
                 />
               </motion.div>
 
-          
               <div className="absolute -bottom-3 -right-3 h-24 w-24 bg-blue-100 rounded-full blur-xl opacity-70" />
               <div className="absolute -top-3 -left-3 h-16 w-16 bg-blue-200 rounded-full blur-xl opacity-70" />
             </div>
 
-           
             <motion.div
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
@@ -233,13 +220,15 @@ const FeaturesSection = () => {
   )
 }
 
-const CardSpotlight = ({ children, index = 0 }) => {
+import { ReactNode } from "react";
+
+const CardSpotlight = ({ children, index = 0 }: { children: ReactNode; index?: number }) => {
   const [isMobile] = useState(false)
-  const cardRef = useRef(null)
+  const cardRef = useRef<HTMLDivElement>(null)
   const [position, setPosition] = useState({ x: 0, y: 0 })
   const [opacity, setOpacity] = useState(0)
 
-  const handleMouseMove = (e) => {
+  const handleMouseMove = (e: { clientX: number; clientY: number }) => {
     if (!cardRef.current || isMobile) return
 
     const card = cardRef.current
@@ -386,7 +375,6 @@ const HowItWorksSection = () => {
   )
 }
 
-
 const TestimonialsSection = () => {
   const testimonials = [
     {
@@ -483,114 +471,6 @@ const TestimonialsSection = () => {
     </section>
   )
 }
-const PricingSection = () => {
-  const plans = [
-    {
-      name: "Basic",
-      price: "Free",
-      description: "Perfect for individuals",
-      features: ["Personal timetable", "Up to 5 swap requests per month", "Basic notifications", "Email support"],
-      cta: "Get Started",
-      popular: false,
-    },
-    {
-      name: "Pro",
-      price: "$9.99",
-      period: "per month",
-      description: "Ideal for educators",
-      features: [
-        "Everything in Basic",
-        "Unlimited swap requests",
-        "Priority notifications",
-        "Advanced analytics",
-        "Priority support",
-      ],
-      cta: "Start Free Trial",
-      popular: true,
-    },
-    {
-      name: "Enterprise",
-      price: "Custom",
-      description: "For institutions",
-      features: [
-        "Everything in Pro",
-        "Custom integrations",
-        "Dedicated account manager",
-        "Bulk user management",
-        "API access",
-        "24/7 phone support",
-      ],
-      cta: "Contact Sales",
-      popular: false,
-    },
-  ]
-
-  return (
-    <section className="py-20 bg-blue-50">
-      <div className="container px-4 mx-auto">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          className="text-center mb-16"
-        >
-          <h2 className="text-3xl font-bold text-gray-900 mb-4">Simple, Transparent Pricing</h2>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Choose the plan that works best for you or your institution.
-          </p>
-        </motion.div>
-
-        <div className="grid md:grid-cols-3 gap-8">
-          {plans.map((plan, index) => (
-            <motion.div
-              key={index}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.2 * index, duration: 0.6 }}
-              className={`bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow ${
-                plan.popular ? "ring-2 ring-blue-500" : ""
-              }`}
-            >
-              {plan.popular && (
-                <div className="bg-blue-600 text-white text-center py-2 text-sm font-medium">Most Popular</div>
-              )}
-
-              <div className="p-8">
-                <h3 className="text-2xl font-bold text-gray-900 mb-2">{plan.name}</h3>
-                <div className="mb-4">
-                  <span className="text-4xl font-bold text-gray-900">{plan.price}</span>
-                  {plan.period && <span className="text-gray-600 ml-2">{plan.period}</span>}
-                </div>
-                <p className="text-gray-600 mb-6">{plan.description}</p>
-
-                <ul className="space-y-3 mb-8">
-                  {plan.features.map((feature, i) => (
-                    <li key={i} className="flex items-start">
-                      <Check className="h-5 w-5 text-blue-500 mr-2 shrink-0 mt-0.5" />
-                      <span className="text-gray-700">{feature}</span>
-                    </li>
-                  ))}
-                </ul>
-
-                <Button
-                  className={`w-full ${
-                    plan.popular
-                      ? "bg-blue-600 hover:bg-blue-700 text-white"
-                      : "bg-white border border-blue-300 text-blue-600 hover:bg-blue-50"
-                  }`}
-                >
-                  {plan.cta}
-                </Button>
-              </div>
-            </motion.div>
-          ))}
-        </div>
-      </div>
-    </section>
-  )
-}
 
 const FaqSection = () => {
   const [openIndex, setOpenIndex] = useState<number | null>(null)
@@ -604,7 +484,7 @@ const FaqSection = () => {
     {
       question: "Can I use TimeSwap for my entire institution?",
       answer:
-        "Absolutely! Our Enterprise plan is designed specifically for institutions. It includes features like bulk user management, custom integrations with your existing systems, and dedicated support.",
+        "Our Enterprise plan is designed specifically for institutions. It includes features like bulk user management, custom integrations with your existing systems, and dedicated support.",
     },
     {
       question: "Is there a mobile app available?",
@@ -687,7 +567,6 @@ const FaqSection = () => {
 const ContactSection = () => {
   return (
     <section className="py-20 bg-blue-600 text-white relative overflow-hidden">
-    
       <div className="absolute inset-0 -z-10">
         <div className="absolute top-1/4 left-1/4 h-64 w-64 rounded-full bg-blue-500 blur-3xl opacity-30" />
         <div className="absolute bottom-1/3 right-1/3 h-96 w-96 rounded-full bg-blue-700 blur-3xl opacity-20" />
@@ -732,7 +611,6 @@ const ContactSection = () => {
               <MessageSquare className="h-5 w-5 mr-2" />
               <span>Live Chat Support</span>
             </div>
-           
           </div>
         </motion.div>
       </div>
