@@ -4,7 +4,7 @@ import { createFallbackStream } from "./fallback";
 
 // Allow streaming responses up to 30 seconds
 export const maxDuration = 30;
-const groq_api_key = "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";
+const groq_api_key = "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";
 export async function POST(req: Request) {
     try {
         // Extract the `messages` from the body of the request
@@ -44,7 +44,7 @@ export async function POST(req: Request) {
         try {
             // Call the language model with the system prompt
             const result = streamText({
-                model: groq("llama-3.1-8b-instant"), // Using the correct model name
+                model: groq("llama-3.1-8b-instant"),
                 messages,
                 system: systemPrompt,
                 maxTokens: 1000, // Limit token count to avoid potential issues

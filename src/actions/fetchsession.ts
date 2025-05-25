@@ -10,6 +10,7 @@ export const FetchSession = async (data: SwapRequest): Promise<SessionResponse[]
             mode: "cors",
             headers: {
                 "Content-Type": "application/json",
+                "Authorization": `Bearer ${localStorage.getItem("auth_access_token")}`,
             },
             body: JSON.stringify(data),
         });
