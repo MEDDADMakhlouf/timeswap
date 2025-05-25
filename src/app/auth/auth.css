@@ -20,6 +20,10 @@
             color: #0334bc;
         }
 
+        form {
+            display: contents;
+        }
+
         p {
             color: #71717a;
             font-family: "Inter", sans-serif;

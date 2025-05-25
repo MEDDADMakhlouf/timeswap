@@ -1,5 +1,4 @@
-import { ChevronDown } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Select, SelectItem, SelectContent, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 interface SwapRequestFilterProps {
     label: string;
@@ -7,9 +6,27 @@ interface SwapRequestFilterProps {
 
 export function SwapRequestFilter({ label }: SwapRequestFilterProps) {
     return (
-        <Button variant="outline" className="gap-2">
-            {label}
-            <ChevronDown className="h-4 w-4" />
-        </Button>
+        <Select>
+            <SelectTrigger className="h-full">
+                <SelectValue placeholder={label} />
+            </SelectTrigger>
+            <SelectContent>
+                {label == "All Types" ? (
+                    <>
+                        <SelectItem value="all">All</SelectItem>
+                        <SelectItem value="lesson">Lesson</SelectItem>
+                        <SelectItem value="td">TD</SelectItem>
+                        <SelectItem value="exam">Exam</SelectItem>
+                    </>
+                ) : (
+                    <>
+                        <SelectItem value="all">All</SelectItem>
+                        <SelectItem value="pending">Pending</SelectItem>
+                        <SelectItem value="approved">Approved</SelectItem>
+                        <SelectItem value="rejected">Rejected</SelectItem>
+                    </>
+                )}
+            </SelectContent>
+        </Select>
     );
 }

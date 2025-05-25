@@ -17,7 +17,7 @@ export interface SessionResponse {
     starting_time: string; // Format: "HH:MM"
     ending_time: string; // Format: "HH:MM"
     week_day: string; // You can also narrow it: "SUNDAY" | "MONDAY" | etc.
-    teacher: {
+    teacher?: {
         id: number;
         username: string;
         email: string;

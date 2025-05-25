@@ -60,7 +60,7 @@ export default function NotificationsPage() {
                 </TabsList>
 
                 {["all", "pending", "accepted", "rejected"].map((tab) => (
-                    <TabsContent key={tab} value={tab} className="space-y-4">
+                    <TabsContent key={tab} value={tab} className="space-y-4 max-w-3xl">
                         {filtered.length === 0 ? (
                             <div className="text-gray-500">No notifications found.</div>
                         ) : (

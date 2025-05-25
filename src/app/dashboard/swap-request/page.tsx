@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Search } from "lucide-react";
+import { PlusCircleIcon, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { SwapRequestTable } from "@/components/features/swap-request/table"; // Make sure this component can accept data as props
@@ -40,31 +40,17 @@ export default function SwapRequestPage() {
             <div className="flex flex-col md:flex-row gap-4 mb-6 items-start md:items-center">
                 <div className="relative flex-1">
                     <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-                    <Input placeholder="Search by subject, teacher, or date..." className="pl-9" />
+                    <Input placeholder="Search by subject, teacher, or date..." className="pl-8" />
                 </div>
-                <div className="flex gap-4">
-                    <SwapRequestFilter label="All Types" />
+                <div className="flex gap-4 items-stretch">
                     <SwapRequestFilter label="All Statuses" />
-                    <Button className="gap-2" asChild>
-                        <Link href="/dashboard/swap-request/create">
-                            <svg
-                                width="20"
-                                height="20"
-                                viewBox="0 0 20 20"
-                                fill="none"
-                                xmlns="http://www.w3.org/2000/svg"
-                            >
-                                <path
-                                    d="M7 10H13M7 10L10 7M7 10L10 13"
-                                    stroke="currentColor"
-                                    strokeWidth="1.5"
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                />
-                            </svg>
+                    <SwapRequestFilter label="All Types" />
+                    <Link href="/dashboard/swap-request/create">
+                        <Button className="gap-2">
                             Swap Request
-                        </Link>
-                    </Button>
+                            <PlusCircleIcon />
+                        </Button>
+                    </Link>
                 </div>
             </div>
 

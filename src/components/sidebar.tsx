@@ -2,16 +2,24 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { useSwapRequestStore } from "@/stores/swap-requests"; // Zustand store
-import { ArrowLeftRight, Bell, Home, Menu } from "lucide-react";
+import { ArrowLeftRight, Bell, Home, LogOut, Menu } from "lucide-react";
 import { useState } from "react";
+import { useAuth } from "@/lib/auth-provider";
 
 export function Sidebar() {
     const pathname = usePathname();
     const pendingCount = useSwapRequestStore((state) => state.pendingCount); // Get pending swap requests from Zustand store
     const [isOpen, setIsOpen] = useState(true);
+    const { logout } = useAuth();
+    const router = useRouter();
+
+    const handleLogout = () => {
+        logout();
+        router.push("/auth/login");
+    };
 
     const navItems = [
         {
@@ -79,13 +87,13 @@ export function Sidebar() {
                 </ul>
             </nav>
             <div className="p-4 mt-auto">
-                <Link
-                    href="/logout"
-                    className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-red-600 hover:bg-red-50 rounded-md"
+                <button
+                    onClick={handleLogout}
+                    className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-red-600 hover:bg-red-50 rounded-md w-fit ms-auto"
                 >
-                    {/* <LogOut className="h-5 w-5" /> */}
+                    <LogOut className="h-5 w-5" />
                     Log out
-                </Link>
+                </button>
             </div>
         </div>
     );

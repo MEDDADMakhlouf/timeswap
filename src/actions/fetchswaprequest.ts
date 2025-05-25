@@ -1,11 +1,14 @@
 import { SessionSwap } from "@/types/session";
+import { fetchWithAuth } from "@/lib/fetch-with-auth";
 
 export const fetchswaprequest = async (): Promise<SessionSwap[]> => {
     try {
-        const response = await fetch("http://127.0.0.1:8000/api/v0/ntoif/", {
+        const response = await fetchWithAuth("http://127.0.0.1:8000/api/v0/ntoif/", {
             method: "GET",
             mode: "cors",
-            headers: {},
+            headers: {
+                "Content-Type": "application/json",
+            },
         });
 
         if (!response.ok) {

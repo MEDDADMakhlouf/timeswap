@@ -40,6 +40,10 @@
 @layer base {
     * {
         @apply border-border;
+        scrollbar-width: thin;
+        scroll-behavior: smooth;
+        scrollbar-color: #2563eb #ccc;
+        box-sizing: border-box;
     }
 
     body {
