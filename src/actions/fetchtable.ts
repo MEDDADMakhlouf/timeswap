@@ -1,10 +1,11 @@
 import { SessionResponse, SwapRequest } from "@/types/swap";
 import { Ursession } from "@/types/table";
 import { fetchWithAuth } from "@/lib/fetch-with-auth";
+import { API_URL } from "@/config/env";
 
 export const Fetchschedule = async (): Promise<Ursession[]> => {
     try {
-        const response = await fetchWithAuth(`http://127.0.0.1:8000/api/v0/urtimeschedule/`, {
+        const response = await fetchWithAuth(`${API_URL}/urtimeschedule/`, {
             method: "GET",
             mode: "cors",
             headers: {

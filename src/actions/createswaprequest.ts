@@ -1,10 +1,11 @@
 import { NewswapRequest, NewSwapRequest } from "@/types/session";
 import { SessionResponse, SwapRequest } from "@/types/swap";
 import { fetchWithAuth } from "@/lib/fetch-with-auth";
+import { API_URL } from "@/config/env";
 
 export const CreateSwapRequest = async (data: NewswapRequest) => {
     try {
-        const response = await fetchWithAuth(`http://127.0.0.1:8000/api/v0/create/`, {
+        const response = await fetchWithAuth(`${API_URL}/create/`, {
             method: "POST",
             mode: "cors",
             headers: {

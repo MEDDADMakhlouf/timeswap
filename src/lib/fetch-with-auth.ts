@@ -1,5 +1,7 @@
 "use client";
 
+import { API_URL } from "../config/env";
+
 /**
  * Fetch function that automatically includes the auth token in headers
  * and handles token refresh when needed
@@ -30,7 +32,7 @@ export const fetchWithAuth = async (url: string, options: RequestInit = {}) => {
 
         if (refreshToken) {
             // Try to get a new access token
-            const refreshResponse = await fetch(`http://127.0.0.1:8000/api/v0/auth/token/refresh/`, {
+            const refreshResponse = await fetch(`${API_URL}/auth/token/refresh/`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

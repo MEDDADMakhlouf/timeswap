@@ -7,15 +7,14 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { SwapRequestTable } from "@/components/features/swap-request/table"; // Make sure this component can accept data as props
 import { SwapRequestFilter } from "@/components/features/swap-request/filter";
-import { SwapRequestDetails } from "@/components/features/swap-request/details";
-import { fetchswaprequest } from "@/actions/fetchswaprequest";
+import { fetchSwapRequest } from "@/actions/fetchswaprequest";
 import { SessionSwap } from "@/types/session";
 import { useQuery } from "@tanstack/react-query";
 
 export default function SwapRequestPage() {
     const { data, error, isLoading } = useQuery<SessionSwap[]>({
         queryKey: ["swapRequests"],
-        queryFn: fetchswaprequest,
+        queryFn: fetchSwapRequest,
         staleTime: 1000 * 60 * 5,
     });
 

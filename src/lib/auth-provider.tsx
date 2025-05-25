@@ -2,6 +2,7 @@
 
 import { createContext, useState, useContext, useEffect, ReactNode } from "react";
 import { fetchWithAuth } from "./fetch-with-auth";
+import { API_URL } from "../config/env";
 
 // Define auth context types
 type AuthContextType = {
@@ -34,7 +35,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     const login = async ({ username, password }: { username: string; password: string }) => {
         try {
-            const response = await fetchWithAuth(`http://127.0.0.1:8000/api/v0/auth/token/`, {
+            const response = await fetchWithAuth(`${API_URL}/auth/token/`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

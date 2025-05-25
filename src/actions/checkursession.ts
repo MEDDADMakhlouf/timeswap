@@ -1,9 +1,10 @@
 import { SessionResponse, SwapRequest } from "@/types/swap";
 import { fetchWithAuth } from "@/lib/fetch-with-auth";
+import { API_URL } from "@/config/env";
 
 export const GetSection = async (data: SwapRequest): Promise<SessionResponse> => {
     try {
-        const response = await fetchWithAuth(`http://127.0.0.1:8000/api/v0/urtimes/`, {
+        const response = await fetchWithAuth(`${API_URL}/urtimes/`, {
             method: "POST",
             mode: "cors",
             headers: {

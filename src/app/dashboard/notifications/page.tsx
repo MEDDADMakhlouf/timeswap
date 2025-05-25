@@ -4,14 +4,14 @@ import { useEffect, useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { NotificationItem } from "@/components/features/notifcations/notification-item";
 import { useQuery } from "@tanstack/react-query";
-import { fetchswaprequest } from "@/actions/fetchswaprequest";
+import { fetchSwapRequest } from "@/actions/fetchswaprequest";
 import type { SessionSwap } from "@/types/session";
 import { useSwapRequestStore } from "@/stores/swap-requests"; // adjust path as needed
 
 export default function NotificationsPage() {
     const { data, error, isLoading } = useQuery<SessionSwap[]>({
         queryKey: ["swapRequests"],
-        queryFn: fetchswaprequest,
+        queryFn: fetchSwapRequest,
     });
     const setRequests = useSwapRequestStore((state) => state.setRequests);
 
