@@ -3,7 +3,6 @@ import { SessionSwap } from "@/types/session";
 import { AlertTriangle, Check, Eye, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { ref } from "process";
 import { getAcceptNotification } from "@/actions/acceptnotif";
 import { getRefuseNotification } from "@/actions/refusenotif";
 import { toast } from "sonner";
@@ -16,7 +15,7 @@ import {
     DialogHeader,
     DialogTitle,
     DialogTrigger,
-} from "./ui/dialog";
+} from "../../ui/dialog";
 
 type NotificationItemProps = {
     swapRequest: SessionSwap;

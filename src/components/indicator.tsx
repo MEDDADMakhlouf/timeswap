@@ -1,9 +1,12 @@
-import Checkin from "@/public/assets/check";
 import * as React from "react";
 
 export interface IndicatorProps {
     phase: number;
 }
+
+const Checkin = () => {
+    return <img src="/assets/check.svg" alt="check" className="w-6 h-6" />;
+};
 
 export const Indicator: React.FC<IndicatorProps> = ({ phase }) => {
     const steps = [1, 2];

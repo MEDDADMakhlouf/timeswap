@@ -4,8 +4,8 @@ import { useState } from "react";
 import { MoreHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import { SwapRequestStatus } from "@/components/swap-request-status";
-import { SwapRequestDetails } from "@/components/swap-request-details";
+import { SwapRequestStatus } from "@/components/features/swap-request/status";
+import { SwapRequestDetails } from "@/components/features/swap-request/details";
 import {
     DropdownMenu,
     DropdownMenuContent,

@@ -26,16 +26,16 @@ export function SwapRequestNotification({ type, message, time }: SwapRequestNoti
                 <div className="mt-4 flex justify-start gap-2 h-35px width-145">
                     {type === "new" ? (
                         <>
-                            <Button size="sm" variant={"outline"} className=" gap-1 btn-primary">
+                            <Button size="sm">
                                 <Check className="h-4 w-4" /> Accept
                             </Button>
-                            <Button size="sm" className="btn-secondary gap-1">
+                            <Button size="sm" variant="outline">
                                 <img src="/false.svg" alt="" />
                                 Decline
                             </Button>
                         </>
                     ) : (
-                        <Button size="sm" className="btn-primary gap-1">
+                        <Button size="sm">
                             <img src="/flech.svg" alt="" />
                             View Details
                         </Button>

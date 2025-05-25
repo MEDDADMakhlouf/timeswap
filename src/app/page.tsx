@@ -6,7 +6,7 @@ import Image from "next/image";
 import { motion } from "motion/react";
 import { ArrowRight, Calendar, Clock, HelpCircle, MessageSquare, RefreshCw } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { ChatBot } from "@/components/chat-bot";
+import { ChatBot } from "@/components/features/chat-bot";
 
 export default function HomePage() {
     return (

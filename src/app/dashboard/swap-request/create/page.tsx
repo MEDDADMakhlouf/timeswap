@@ -1,8 +1,8 @@
 "use client";
 
-import Firstpage from "@/components/firstpage";
+import Firstpage from "@/components/features/swap-request/new/page-1";
 import { Indicator } from "@/components/indicator";
-import Secondpage from "@/components/secondpage";
+import Secondpage from "@/components/features/swap-request/new/page-2";
 import { NewSwapRequest } from "@/types/session";
 import { SessionResponse } from "@/types/swap";
 import { ChevronLeft } from "lucide-react";

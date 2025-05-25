@@ -1,6 +1,6 @@
 import React from "react";
 import { SessionResponse } from "@/types/swap";
-import { Button } from "./ui/button";
+import { Button } from "../../../ui/button";
 import { CreateSwapRequest } from "@/actions/createswaprequest";
 import { NewswapRequest, NewSwapRequest, Session } from "@/types/session";
 

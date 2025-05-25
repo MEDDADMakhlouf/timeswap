@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { NotificationItem } from "@/components/notification-item";
+import { NotificationItem } from "@/components/features/notifcations/notification-item";
 import { useQuery } from "@tanstack/react-query";
 import { fetchswaprequest } from "@/actions/fetchswaprequest";
 import type { SessionSwap } from "@/types/session";

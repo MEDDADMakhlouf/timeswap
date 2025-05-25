@@ -5,9 +5,9 @@ import Link from "next/link";
 import { Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { SwapRequestTable } from "@/components/swap-request-table"; // Make sure this component can accept data as props
-import { SwapRequestFilter } from "@/components/swap-request-filter";
-import { SwapRequestDetails } from "@/components/swap-request-details";
+import { SwapRequestTable } from "@/components/features/swap-request/table"; // Make sure this component can accept data as props
+import { SwapRequestFilter } from "@/components/features/swap-request/filter";
+import { SwapRequestDetails } from "@/components/features/swap-request/details";
 import { fetchswaprequest } from "@/actions/fetchswaprequest";
 import { SessionSwap } from "@/types/session";
 import { useQuery } from "@tanstack/react-query";

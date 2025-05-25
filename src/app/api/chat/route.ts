@@ -44,11 +44,10 @@ export async function POST(req: Request) {
         try {
             // Call the language model with the system prompt
             const result = streamText({
-                model: groq("llama-3.1-8b-instant", { apiKey: groq_api_key }), // Using the correct model name
+                model: groq("llama-3.1-8b-instant"), // Using the correct model name
                 messages,
                 system: systemPrompt,
                 maxTokens: 1000, // Limit token count to avoid potential issues
-                apiKey: groq_api_key,
             });
 
             // Respond with the stream

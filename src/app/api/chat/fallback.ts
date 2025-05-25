@@ -50,7 +50,7 @@ export function createFallbackStream(userMessage: string) {
                     type: "text",
                     text: "",
                 },
-            });
+            } as any);
 
             // Send characters with delays to simulate typing
             for (const char of chars) {
@@ -62,7 +62,7 @@ export function createFallbackStream(userMessage: string) {
                         type: "text",
                         text: char,
                     },
-                });
+                } as any);
             }
 
             // Send final message
@@ -73,7 +73,7 @@ export function createFallbackStream(userMessage: string) {
                     content: response,
                     id: `fallback-${Date.now()}`,
                 },
-            });
+            } as any);
         },
     });
 }

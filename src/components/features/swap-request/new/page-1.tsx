@@ -1,9 +1,8 @@
 "use client";
 import { useEffect, useState } from "react";
-import { Button } from "./ui/button";
+import { Button } from "../../../ui/button";
 import { SessionResponse, SwapRequest } from "@/types/swap";
 import { FetchSession } from "@/actions/fetchsession";
-import { Session } from "@/types/session";
 import { GetSection } from "@/actions/checkursession";
 
 interface FirstpageProps {

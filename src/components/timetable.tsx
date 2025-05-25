@@ -82,33 +82,35 @@ export function Timetable() {
     };
 
     return (
-        <div className="space-y-4">
-            <div className="flex justify-between items-center">
-                <h2 className="text-xl font-bold">My TimeTable</h2>
-            </div>
-            <div className="border rounded-lg overflow-hidden">
-                <div className="grid grid-cols-7 border-b">
-                    <div className="p-3 font-medium border-r bg-gray-100">Day / Time</div>
-                    {timeSlots.map((time) => (
-                        <div key={time} className="p-3 font-medium text-center text-xs border-r ">
-                            {time}
-                        </div>
-                    ))}
+        <div className="border rounded-lg overflow-hidden">
+            <div className="grid grid-cols-7 border-b">
+                <div className="p-3 font-medium border-r bg-gray-100 text-gray-700 text-base! lowercase flex items-center justify-center">
+                    Day / Time
                 </div>
-                {days.map((day) => (
-                    <div key={day} className="grid grid-cols-7 border-b last:border-b-0">
-                        <div className="p-3 font-medium border-r bg-gray-50">{day}</div>
-                        {timeSlots.map((time) => {
-                            const classData = getClass(day, time);
-                            return (
-                                <div key={`${day}-${time}`} className="p-2 min-h-24 border-r">
-                                    <ClassCell classData={classData} />
-                                </div>
-                            );
-                        })}
+                {timeSlots.map((time) => (
+                    <div
+                        key={time}
+                        className="p-3 font-medium text-center text-xs border-r text-gray-700 text-base! lowercase flex items-center justify-center"
+                    >
+                        {time}
                     </div>
                 ))}
             </div>
+            {days.map((day) => (
+                <div key={day} className="grid grid-cols-7 border-b last:border-b-0">
+                    <div className="border-r bg-gray-50 text-gray-700 text-base! lowercase flex items-center justify-center">
+                        {day}
+                    </div>
+                    {timeSlots.map((time) => {
+                        const classData = getClass(day, time);
+                        return (
+                            <div key={`${day}-${time}`} className="p-2 min-h-24 border-r">
+                                <ClassCell classData={classData} />
+                            </div>
+                        );
+                    })}
+                </div>
+            ))}
         </div>
     );
 }
