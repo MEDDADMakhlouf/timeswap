@@ -4,7 +4,6 @@ import { API_URL } from "@/config/env";
 export const rejectSwapRequest = async (id: string) => {
     try {
         const response = await fetchWithAuth(`${API_URL}/swap-requests/${id}/reject/`, {
-            method: "POST",
             mode: "cors",
             headers: {
                 "Content-Type": "application/json",

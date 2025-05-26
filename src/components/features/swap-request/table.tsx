@@ -155,7 +155,6 @@ export function SwapRequestTable({ data, onRequestUpdate }: Props) {
                               subject: selectedRequest.from_session.module,
                               type: selectedRequest.from_session.session_type,
                               date: `${selectedRequest.from_session.week_day}, ${selectedRequest.from_session.starting_time} - ${selectedRequest.from_session.ending_time}`,
-                              section: "C", // Replace with actual section if available
                               requestedBy: selectedRequest.from_session.teacher.username,
                               requestedTo: selectedRequest.to_session.teacher.username,
                               room: selectedRequest.from_session.room.room_id,

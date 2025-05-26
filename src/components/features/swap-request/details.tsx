@@ -11,7 +11,6 @@ interface SwapRequestDetailsProps {
         subject: string;
         type: string;
         date: string;
-        section: string;
         requestedBy: string;
         requestedTo: string;
         room: string;
@@ -32,19 +31,6 @@ export function SwapRequestDetails({ open: externalOpen, onOpenChange, data }: S
         }
     };
 
-    // Default data for demo purposes
-    const requestData = data || {
-        subject: "Algorithm",
-        type: "Cour",
-        date: "Monday, 08:00 - 09:30",
-        section: "C",
-        requestedBy: "Neila Hoacine",
-        requestedTo: "Lina Haddad",
-        room: "215D",
-        newRoom: "425D",
-        status: "accepted" as const,
-    };
-
     return (
         <Dialog open={open} onOpenChange={handleOpenChange}>
             <DialogContent className="sm:max-w-md">
@@ -63,49 +49,44 @@ export function SwapRequestDetails({ open: externalOpen, onOpenChange, data }: S
                     <div className="space-y-2">
                         <div className="text-gray-500">Subject :</div>
                         <div className="flex items-center gap-2">
-                            <span>{requestData.subject}</span>
+                            <span>{data?.subject}</span>
                             <span className="px-2 py-1 text-xs font-medium rounded-md bg-blue-500 text-white">
-                                {requestData.type}
+                                {data?.type}
                             </span>
                         </div>
                     </div>
 
                     <div className="space-y-2">
                         <div className="text-gray-500">Date :</div>
-                        <div>{requestData.date}</div>
-                    </div>
-
-                    <div className="space-y-2">
-                        <div className="text-gray-500">section :</div>
-                        <div>{requestData.section}</div>
+                        <div>{data?.date}</div>
                     </div>
 
                     <div className="space-y-2">
                         <div className="text-gray-500">Requested by:</div>
-                        <div>{requestData.requestedBy}</div>
+                        <div>{data?.requestedBy}</div>
                     </div>
 
                     <div className="space-y-2">
                         <div className="text-gray-500">Requested to:</div>
-                        <div>{requestData.requestedTo}</div>
+                        <div>{data?.requestedTo}</div>
                     </div>
 
                     <div className="grid grid-cols-2 gap-4">
                         <div className="space-y-2">
                             <div className="text-gray-500">Room :</div>
-                            <div>{requestData.room}</div>
+                            <div>{data?.room}</div>
                         </div>
 
                         <div className="space-y-2">
                             <div className="text-gray-500">New Room :</div>
-                            <div>{requestData.newRoom}</div>
+                            <div>{data?.newRoom}</div>
                         </div>
                     </div>
 
                     <div className="space-y-2">
                         <div className="text-gray-500">Status :</div>
                         <div>
-                            <SwapRequestStatus status={requestData.status} />
+                            <SwapRequestStatus status={data?.status || "pending"} />
                         </div>
                     </div>
                 </div>
