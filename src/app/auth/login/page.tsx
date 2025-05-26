@@ -14,7 +14,8 @@ export default function LoginPage() {
         e.preventDefault();
 
         try {
-            await login({ username, password });
+            await login({ username, password })
+            await localStorage.setItem("username", username);
 
             // Redirect to dashboard
             router.push("/dashboard");

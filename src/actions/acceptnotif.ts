@@ -8,6 +8,7 @@ export const getAcceptNotification = async (id: string) => {
             mode: "cors",
             headers: {
                 "Content-Type": "application/json",
+                "Authorization": `Bearer ${localStorage.getItem("auth_access_token")}`,
             },
         });
 
