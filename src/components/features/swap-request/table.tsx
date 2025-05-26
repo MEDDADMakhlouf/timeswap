@@ -13,18 +13,49 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { SessionSwap } from "@/types/session";
+import { acceptSwapRequest } from "@/actions/acceptnotif";
+import { rejectSwapRequest } from "@/actions/refusenotif";
+import { toast } from "sonner";
 
 type Props = {
     data: SessionSwap[];
+    onRequestUpdate?: () => void;
 };
 
-export function SwapRequestTable({ data }: Props) {
+export function SwapRequestTable({ data, onRequestUpdate }: Props) {
     const [selectedRequest, setSelectedRequest] = useState<SessionSwap | null>(null);
     const [detailsOpen, setDetailsOpen] = useState(false);
+    const [loading, setLoading] = useState<string | null>(null);
 
     const handleViewDetails = (request: SessionSwap) => {
         setSelectedRequest(request);
         setDetailsOpen(true);
+    };
+
+    const handleAccept = async (requestId: string) => {
+        setLoading(requestId);
+        try {
+            await acceptSwapRequest(requestId);
+            toast.success("Swap request accepted successfully");
+            onRequestUpdate?.();
+        } catch (error) {
+            toast.error("Failed to accept swap request");
+        } finally {
+            setLoading(null);
+        }
+    };
+
+    const handleReject = async (requestId: string) => {
+        setLoading(requestId);
+        try {
+            await rejectSwapRequest(requestId);
+            toast.success("Swap request rejected successfully");
+            onRequestUpdate?.();
+        } catch (error) {
+            toast.error("Failed to reject swap request");
+        } finally {
+            setLoading(null);
+        }
     };
 
     return (
@@ -88,8 +119,22 @@ export function SwapRequestTable({ data }: Props) {
                                         </DropdownMenuItem>
                                         {request.status === "PENDING" && (
                                             <>
-                                                <DropdownMenuItem>Accept</DropdownMenuItem>
-                                                <DropdownMenuItem>Reject</DropdownMenuItem>
+                                                <DropdownMenuItem
+                                                    onClick={() => handleAccept(request.id.toString())}
+                                                    disabled={loading === request.id.toString()}
+                                                >
+                                                    {loading === request.id.toString()
+                                                        ? "Accepting..."
+                                                        : "Accept"}
+                                                </DropdownMenuItem>
+                                                <DropdownMenuItem
+                                                    onClick={() => handleReject(request.id.toString())}
+                                                    disabled={loading === request.id.toString()}
+                                                >
+                                                    {loading === request.id.toString()
+                                                        ? "Rejecting..."
+                                                        : "Reject"}
+                                                </DropdownMenuItem>
                                             </>
                                         )}
                                     </DropdownMenuContent>

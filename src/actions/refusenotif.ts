@@ -1,12 +1,14 @@
 import { fetchWithAuth } from "@/lib/fetch-with-auth";
 import { API_URL } from "@/config/env";
 
-export const getRefuseNotification = async (id: string) => {
+export const rejectSwapRequest = async (id: string) => {
     try {
         const response = await fetchWithAuth(`${API_URL}/swap-requests/${id}/reject/`, {
-            method: "GET",
+            method: "POST",
             mode: "cors",
-            headers: {},
+            headers: {
+                "Content-Type": "application/json",
+            },
         });
 
         if (!response.ok) {
@@ -14,7 +16,7 @@ export const getRefuseNotification = async (id: string) => {
         }
         return response.status;
     } catch (error) {
-        console.error("Error fetching swap requests:", error);
+        console.error("Error rejecting swap request:", error);
         throw error;
     }
 };

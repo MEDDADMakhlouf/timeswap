@@ -9,9 +9,10 @@ import { SwapRequestTable } from "@/components/features/swap-request/table"; // 
 import { SwapRequestFilter } from "@/components/features/swap-request/filter";
 import { fetchSwapRequest } from "@/actions/fetchswaprequest";
 import { SessionSwap } from "@/types/session";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 export default function SwapRequestPage() {
+    const queryClient = useQueryClient();
     const { data, error, isLoading } = useQuery<SessionSwap[]>({
         queryKey: ["swapRequests"],
         queryFn: fetchSwapRequest,
@@ -19,6 +20,10 @@ export default function SwapRequestPage() {
     });
 
     const [detailsOpen, setDetailsOpen] = useState(false);
+
+    const handleRequestUpdate = () => {
+        queryClient.invalidateQueries({ queryKey: ["swapRequests"] });
+    };
 
     // Handle loading and error states
     if (isLoading) {
@@ -54,7 +59,7 @@ export default function SwapRequestPage() {
             </div>
 
             {/* Pass the data to SwapRequestTable */}
-            <SwapRequestTable data={data ?? []} />
+            <SwapRequestTable data={data ?? []} onRequestUpdate={handleRequestUpdate} />
         </div>
     );
 }

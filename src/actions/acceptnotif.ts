@@ -1,14 +1,12 @@
 import { fetchWithAuth } from "@/lib/fetch-with-auth";
 import { API_URL } from "@/config/env";
 
-export const getAcceptNotification = async (id: string) => {
+export const acceptSwapRequest = async (id: string) => {
     try {
-        const response = await fetchWithAuth(`${API_URL}/swap-requests/${id}/reject/`, {
-            method: "GET",
+        const response = await fetchWithAuth(`${API_URL}/swap-requests/${id}/accept/`, {
             mode: "cors",
             headers: {
                 "Content-Type": "application/json",
-                "Authorization": `Bearer ${localStorage.getItem("auth_access_token")}`,
             },
         });
 
@@ -17,7 +15,7 @@ export const getAcceptNotification = async (id: string) => {
         }
         return response.status;
     } catch (error) {
-        console.error("Error fetching swap requests:", error);
+        console.error("Error accepting swap request:", error);
         throw error;
     }
 };
