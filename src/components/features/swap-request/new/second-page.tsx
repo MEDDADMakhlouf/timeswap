@@ -3,6 +3,8 @@ import React, { useEffect, useState } from "react";
 import { SessionResponse, SwapRequest } from "@/types/swap";
 import { Button } from "@/components/ui/button";
 import { FetchSession } from "@/actions/fetchsession";
+import { FetchRooms } from "@/actions/fetchrooms";
+import { Room } from "@/types/session";
 import { toast } from "sonner";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
@@ -24,17 +26,7 @@ interface SecondpageProps {
 }
 
 export default function SecondPage(props: SecondpageProps) {
-    const {
-        phase,
-        setPhase,
-        fromsession,
-        settosession,
-        swapType,
-        selectedDay,
-        selectedTime,
-        swapReason,
-        setSwapReason,
-    } = props;
+    const { phase, setPhase, fromsession, settosession, swapType, swapReason, setSwapReason } = props;
 
     const [availableSessions, setAvailableSessions] = useState<SessionResponse[]>([]);
     const [selectedSessionId, setSelectedSessionId] = useState<string>("");
@@ -42,63 +34,126 @@ export default function SecondPage(props: SecondpageProps) {
 
     // Filter states
     const [filteredSessions, setFilteredSessions] = useState<SessionResponse[]>([]);
-    const [teacherFilter, setTeacherFilter] = useState("all");
-    const [roomFilter, setRoomFilter] = useState("all");
-    const [timeFilter, setTimeFilter] = useState("all");
+    const [selectedTargetRoom, setSelectedTargetRoom] = useState("");
+    const [selectedTargetTime, setSelectedTargetTime] = useState("");
+    const [selectedTargetDay, setSelectedTargetDay] = useState("");
 
-    // Fetch available sessions on component mount
+    // Rooms state
+    const [availableRooms, setAvailableRooms] = useState<Room[]>([]);
+    const [isLoadingRooms, setIsLoadingRooms] = useState(false);
+
+    // Fetch rooms on component mount
+    useEffect(() => {
+        const fetchRooms = async () => {
+            setIsLoadingRooms(true);
+            try {
+                const rooms = await FetchRooms();
+                setAvailableRooms(rooms);
+            } catch (error) {
+                toast.error("Error fetching rooms", {
+                    description: "Failed to retrieve available rooms",
+                });
+                console.error("Error fetching rooms:", error);
+            } finally {
+                setIsLoadingRooms(false);
+            }
+        };
+
+        fetchRooms();
+    }, []);
+
+    // Auto-select values based on swap type
+    useEffect(() => {
+        if (!fromsession) return;
+
+        if (swapType === "roomOnly") {
+            // For room-only swaps: auto-select current day and time
+            setSelectedTargetDay(fromsession.week_day);
+            setSelectedTargetTime(`${fromsession.starting_time}-${fromsession.ending_time}`);
+            // Reset room selection to force user to choose a different room
+            setSelectedTargetRoom("");
+        } else if (swapType === "timeOnly") {
+            // For time-only swaps: auto-select current room only
+            setSelectedTargetRoom(fromsession.room?.room_id || "");
+            // Reset day and time selection to allow user to choose different time/day
+            setSelectedTargetDay("");
+            setSelectedTargetTime("");
+        } else {
+            // For entire session swaps: reset all selections
+            setSelectedTargetDay("");
+            setSelectedTargetTime("");
+            setSelectedTargetRoom("");
+        }
+    }, [swapType, fromsession]);
+
+    // Fetch available sessions when room, time, and day are selected
     useEffect(() => {
         const fetchAvailableSessions = async () => {
-            if (!selectedDay || !selectedTime) return;
+            if (!selectedTargetRoom || !selectedTargetTime || !selectedTargetDay) {
+                setAvailableSessions([]);
+                setFilteredSessions([]);
+                setSelectedSessionId("");
+                return;
+            }
 
             setIsLoading(true);
-            const [start_time, end_time] = selectedTime.split("-");
+            const [start_time, end_time] = selectedTargetTime.split("-");
 
-            const data: Omit<SwapRequest, "session_type"> = {
+            const data: SwapRequest = {
                 start_time,
                 end_time,
-                week_day: selectedDay,
+                week_day: selectedTargetDay,
+                session_type: fromsession?.session_type || "TD",
             };
 
             try {
                 // Fetch available swap sessions
                 const sessionsResult = await FetchSession(data);
-                // Filter out user's own session if present
-                let filteredSessions = fromsession
-                    ? sessionsResult.filter((session) => session.id !== fromsession.id)
-                    : sessionsResult;
 
-                // Apply swap type restrictions
-                if (fromsession && swapType) {
-                    filteredSessions = filteredSessions.filter((session) => {
-                        // If swapping room only, exclude sessions with the same room
-                        if (swapType === "roomOnly" && session.room?.room_id === fromsession.room?.room_id) {
-                            return false;
+                // Filter sessions based on swap type
+                let filteredSessions = sessionsResult.filter((session) => {
+                    // Always exclude user's own session
+                    if (fromsession && session.id === fromsession.id) return false;
+
+                    // Apply swap type specific filtering
+                    if (fromsession && swapType) {
+                        if (swapType === "roomOnly") {
+                            // For room-only swaps: same time/day, different room
+                            return (
+                                session.room?.room_id === selectedTargetRoom &&
+                                session.room?.room_id !== fromsession.room?.room_id &&
+                                session.starting_time === fromsession.starting_time &&
+                                session.ending_time === fromsession.ending_time &&
+                                session.week_day === fromsession.week_day
+                            );
+                        } else if (swapType === "timeOnly") {
+                            // For time-only swaps: same room, different time/day
+                            return (
+                                session.room?.room_id === fromsession.room?.room_id &&
+                                session.room?.room_id === selectedTargetRoom &&
+                                (session.starting_time !== fromsession.starting_time ||
+                                    session.ending_time !== fromsession.ending_time ||
+                                    session.week_day !== fromsession.week_day)
+                            );
+                        } else {
+                            // For entire session swaps: any different session with selected criteria
+                            return session.room?.room_id === selectedTargetRoom;
                         }
+                    }
 
-                        // If swapping time only, exclude sessions with the same time
-                        if (
-                            swapType === "timeOnly" &&
-                            session.starting_time === fromsession.starting_time &&
-                            session.ending_time === fromsession.ending_time
-                        ) {
-                            return false;
-                        }
-
-                        return true;
-                    });
-                }
+                    // Default: match selected room
+                    return session.room?.room_id === selectedTargetRoom;
+                });
 
                 setAvailableSessions(filteredSessions);
                 setFilteredSessions(filteredSessions);
 
                 // Reset selection when available sessions change
                 setSelectedSessionId("");
-                resetFilters();
 
                 if (filteredSessions.length === 0) {
                     toast.info("No available sessions", {
-                        description: "No sessions found matching your criteria",
+                        description: "No sessions found for the selected criteria",
                     });
                 }
             } catch (error) {
@@ -112,58 +167,59 @@ export default function SecondPage(props: SecondpageProps) {
         };
 
         fetchAvailableSessions();
-    }, [fromsession, selectedDay, selectedTime, swapType]);
+    }, [fromsession, selectedTargetRoom, selectedTargetTime, selectedTargetDay, swapType]);
 
-    // Extract unique values for filters
-    const getUniqueTeachers = () => {
-        const teachers = availableSessions
-            .map((session) => session.teacher?.username || "Unknown")
-            .filter((value, index, self) => self.indexOf(value) === index);
-        return teachers;
+    // Get available rooms and times for selection
+    const getAvailableRooms = () => {
+        // Get room IDs from fetched rooms
+        const roomIds = availableRooms.map((room) => room.room_id);
+
+        // Add rooms based on swap type restrictions
+        if (fromsession && swapType === "roomOnly") {
+            // For room-only swaps, exclude the current room
+            return roomIds.filter((roomId) => roomId !== fromsession.room?.room_id);
+        } else if (fromsession && swapType === "timeOnly") {
+            // For time-only swaps, only show the current room
+            return fromsession.room?.room_id ? [fromsession.room.room_id] : [];
+        } else {
+            // For entire session swaps, show all rooms
+            return roomIds;
+        }
     };
 
-    const getUniqueRooms = () => {
-        const rooms = availableSessions
-            .map((session) => session.room?.room_id || "Unknown")
-            .filter((value, index, self) => self.indexOf(value) === index);
-        return rooms;
+    const getAvailableTimes = () => {
+        const times = [
+            "08:00-09:30",
+            "09:40-11:10",
+            "11:20-12:50",
+            "13:00-14:30",
+            "14:40-16:10",
+            "16:20-17:50",
+        ];
+
+        if (fromsession && swapType === "timeOnly") {
+            // For time-only swaps, exclude the current time
+            const currentTime = `${fromsession.starting_time}-${fromsession.ending_time}`;
+            return times.filter((time) => time !== currentTime);
+        } else if (fromsession && swapType === "roomOnly") {
+            // For room-only swaps, only show the current time
+            return [`${fromsession.starting_time}-${fromsession.ending_time}`];
+        } else {
+            // For entire session swaps, show all times
+            return times;
+        }
     };
 
-    const getUniqueTimes = () => {
-        const times = availableSessions
-            .map((session) => `${session.starting_time}-${session.ending_time}`)
-            .filter((value, index, self) => self.indexOf(value) === index);
-        return times;
-    };
+    const getAvailableDays = () => {
+        const days = ["SUNDAY", "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY"];
 
-    // Apply filters to sessions
-    useEffect(() => {
-        let result = [...availableSessions];
-
-        // Apply teacher filter
-        if (teacherFilter !== "all") {
-            result = result.filter((session) => session.teacher?.username === teacherFilter);
+        if (fromsession && swapType === "roomOnly") {
+            // For room-only swaps, only show the current day
+            return [fromsession.week_day];
+        } else {
+            // For time-only and entire session swaps, show all days
+            return days;
         }
-
-        // Apply room filter
-        if (roomFilter !== "all") {
-            result = result.filter((session) => session.room?.room_id === roomFilter);
-        }
-
-        // Apply time filter
-        if (timeFilter !== "all") {
-            result = result.filter(
-                (session) => `${session.starting_time}-${session.ending_time}` === timeFilter,
-            );
-        }
-
-        setFilteredSessions(result);
-    }, [availableSessions, teacherFilter, roomFilter, timeFilter]);
-
-    const resetFilters = () => {
-        setTeacherFilter("all");
-        setRoomFilter("all");
-        setTimeFilter("all");
     };
 
     const handleBack = () => {
@@ -218,191 +274,187 @@ export default function SecondPage(props: SecondpageProps) {
 
     return (
         <div className="space-y-8">
-            {/* Display current session info */}
+            {/* Swap type information */}
             <div className="p-4 border border-blue-200 bg-blue-50 rounded-md">
-                <h3 className="font-medium text-blue-800">Your Current Session</h3>
+                <h3 className="font-medium text-blue-800">
+                    Swap Type:{" "}
+                    {swapType === "roomOnly"
+                        ? "Room Only"
+                        : swapType === "timeOnly"
+                        ? "Time Only"
+                        : "Entire Session"}
+                </h3>
                 <div className="mt-2 text-sm text-blue-700">
-                    <p>
-                        <strong>Module:</strong> {fromsession.module}
-                    </p>
-                    <p>
-                        <strong>Day:</strong> {fromsession.week_day}
-                    </p>
-                    <p>
-                        <strong>Time:</strong> {fromsession.starting_time} - {fromsession.ending_time}
-                    </p>
-                    <p>
-                        <strong>Room:</strong> {fromsession.room?.room_id || "Unknown"}
-                    </p>
-                    <p>
-                        <strong>Type:</strong> {fromsession.session_type}
-                    </p>
+                    {swapType === "roomOnly" && (
+                        <p>
+                            You are swapping to a different room while keeping the same day and time (
+                            {fromsession.week_day}, {fromsession.starting_time}-{fromsession.ending_time}).
+                        </p>
+                    )}
+                    {swapType === "timeOnly" && (
+                        <p>
+                            You are swapping to a different time and/or day while keeping the same room (Room{" "}
+                            {fromsession.room?.room_id}).
+                        </p>
+                    )}
+                    {swapType !== "roomOnly" && swapType !== "timeOnly" && (
+                        <p>
+                            You are swapping your entire session for a completely different session (different
+                            day, time, and/or room).
+                        </p>
+                    )}
                 </div>
             </div>
 
-            <div>
-                <h2 className="text-lg font-medium mb-4">Select a Session to Swap With</h2>
+            <div className="space-y-6">
+                <div>
+                    <h2 className="text-lg font-medium mb-4">
+                        Select a New Time Slot
+                        {swapType === "roomOnly" && (
+                            <span className="text-sm font-normal text-gray-500 ml-2">
+                                (Fixed to current time for room-only swap)
+                            </span>
+                        )}
+                    </h2>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <Select
+                                value={selectedTargetDay}
+                                onValueChange={setSelectedTargetDay}
+                                disabled={swapType === "roomOnly"}
+                            >
+                                <SelectTrigger className="w-full">
+                                    <SelectValue placeholder="Select a day" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {getAvailableDays().map((day) => (
+                                        <SelectItem key={day} value={day}>
+                                            {day.charAt(0) + day.slice(1).toLowerCase()}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                        </div>
 
-                {/* Swap type information */}
-                {swapType && fromsession && (
-                    <div className="mb-4 p-3 border border-blue-200 bg-blue-50 rounded-md">
-                        <p className="text-sm text-blue-800">
-                            {swapType === "roomOnly" && (
-                                <>
-                                    <strong>Room Only Swap:</strong> Sessions in room{" "}
-                                    {fromsession.room?.room_id} are excluded since you want to change rooms.
-                                </>
-                            )}
-                            {swapType === "timeOnly" && (
-                                <>
-                                    <strong>Time Only Swap:</strong> Sessions at {fromsession.starting_time}-
-                                    {fromsession.ending_time} are excluded since you want to change time.
-                                </>
-                            )}
-                            {swapType === "entireSession" && (
-                                <>
-                                    <strong>Entire Session Swap:</strong> You can swap with any available
-                                    session.
-                                </>
-                            )}
-                        </p>
-                    </div>
-                )}
-
-                {/* Filters */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 border rounded-md bg-gray-50 mb-4">
-                    <div>
-                        <Label htmlFor="teacher-filter" className="block text-sm font-medium mb-1">
-                            Teacher
-                        </Label>
-                        <Select value={teacherFilter} onValueChange={setTeacherFilter}>
-                            <SelectTrigger id="teacher-filter" className="w-full">
-                                <SelectValue placeholder="Filter by teacher" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="all">All Teachers</SelectItem>
-                                {getUniqueTeachers().map((teacher) => (
-                                    <SelectItem key={teacher} value={teacher}>
-                                        {teacher}
-                                    </SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-                    </div>
-
-                    <div>
-                        <Label htmlFor="room-filter" className="block text-sm font-medium mb-1">
-                            Room
-                        </Label>
-                        <Select value={roomFilter} onValueChange={setRoomFilter}>
-                            <SelectTrigger id="room-filter" className="w-full">
-                                <SelectValue placeholder="Filter by room" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="all">All Rooms</SelectItem>
-                                {getUniqueRooms().map((room) => (
-                                    <SelectItem key={room} value={room}>
-                                        {room}
-                                    </SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-                    </div>
-
-                    <div>
-                        <Label htmlFor="time-filter" className="block text-sm font-medium mb-1">
-                            Time
-                        </Label>
-                        <Select value={timeFilter} onValueChange={setTimeFilter}>
-                            <SelectTrigger id="time-filter" className="w-full">
-                                <SelectValue placeholder="Filter by time" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="all">All Times</SelectItem>
-                                {getUniqueTimes().map((time) => (
-                                    <SelectItem key={time} value={time}>
-                                        {time}
-                                    </SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-                    </div>
-
-                    <div className="md:col-span-3 flex justify-end">
-                        <Button variant="outline" size="sm" onClick={resetFilters}>
-                            Reset Filters
-                        </Button>
+                        <div>
+                            <Select
+                                value={selectedTargetTime}
+                                onValueChange={setSelectedTargetTime}
+                                disabled={swapType === "roomOnly"}
+                            >
+                                <SelectTrigger className="w-full">
+                                    <SelectValue placeholder="Select a time" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {getAvailableTimes().map((time) => (
+                                        <SelectItem key={time} value={time}>
+                                            {time}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                        </div>
                     </div>
                 </div>
 
-                {/* Session selection */}
-                {isLoading ? (
-                    <div className="flex justify-center py-4">
-                        <div className="animate-pulse text-center">
-                            <p className="text-sm text-gray-500">Loading available sessions...</p>
-                        </div>
-                    </div>
-                ) : filteredSessions.length > 0 ? (
+                <div>
+                    <h2 className="text-lg font-medium mb-4">
+                        Select a New Room
+                        {swapType === "timeOnly" && (
+                            <span className="text-sm font-normal text-gray-500 ml-2">
+                                (Fixed to current room for time-only swap)
+                            </span>
+                        )}
+                    </h2>
+                    <Select
+                        value={selectedTargetRoom}
+                        onValueChange={setSelectedTargetRoom}
+                        disabled={isLoadingRooms || swapType === "timeOnly"}
+                    >
+                        <SelectTrigger className="w-full">
+                            <SelectValue
+                                placeholder={isLoadingRooms ? "Loading rooms..." : "Select a Room"}
+                            />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {getAvailableRooms().map((room) => (
+                                <SelectItem key={room} value={room}>
+                                    {room}
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                </div>
+
+                {/* Available Sessions Selection */}
+                {selectedTargetDay && selectedTargetRoom && selectedTargetTime && (
                     <div>
-                        <p className="text-sm text-gray-500 mb-2">
-                            {filteredSessions.length} {filteredSessions.length === 1 ? "session" : "sessions"}{" "}
-                            available
-                        </p>
-                        <Select value={selectedSessionId} onValueChange={setSelectedSessionId}>
-                            <SelectTrigger className="w-full">
-                                <SelectValue placeholder="Select a session" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                {filteredSessions.map((session) => (
-                                    <SelectItem key={session.id} value={session.id.toString()}>
-                                        {formatSessionOption(session)}
-                                    </SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-                    </div>
-                ) : (
-                    <div className="p-4 border border-amber-200 bg-amber-50 rounded-md">
-                        <p className="text-amber-800">
-                            {availableSessions.length > 0
-                                ? "No sessions match your current filters. Try adjusting or resetting your filters."
-                                : "No available sessions found. Try selecting a different day, time, or swap type."}
-                        </p>
-                        {availableSessions.length > 0 && (
-                            <Button variant="outline" size="sm" onClick={resetFilters} className="mt-2">
-                                Reset Filters
-                            </Button>
+                        <h2 className="text-lg font-medium mb-4">Select Available Session</h2>
+                        {isLoading ? (
+                            <div className="flex justify-center py-4">
+                                <div className="animate-pulse text-center">
+                                    <p className="text-sm text-gray-500">Loading available sessions...</p>
+                                </div>
+                            </div>
+                        ) : filteredSessions.length > 0 ? (
+                            <div>
+                                <p className="text-sm mb-2">
+                                    {filteredSessions.length}{" "}
+                                    {filteredSessions.length === 1 ? "session" : "sessions"} available
+                                </p>
+                                <Select value={selectedSessionId} onValueChange={setSelectedSessionId}>
+                                    <SelectTrigger className="w-full">
+                                        <SelectValue placeholder="Select a session" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {filteredSessions.map((session) => (
+                                            <SelectItem key={session.id} value={session.id.toString()}>
+                                                {formatSessionOption(session)}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                        ) : (
+                            <div className="p-4 border border-amber-200 bg-amber-50 rounded-md">
+                                <p className="text-amber-800">
+                                    No available sessions found for the selected day, room, and time.
+                                </p>
+                            </div>
                         )}
                     </div>
                 )}
-            </div>
 
-            {selectedSessionId && (
-                <div className="p-4 border border-green-200 bg-green-50 rounded-md">
-                    {availableSessions
-                        .filter((session) => session.id === parseInt(selectedSessionId))
-                        .map((session) => (
-                            <div key={session.id} className="text-sm text-green-700">
-                                <h3 className="font-medium text-green-800 mb-2">Selected Session Details</h3>
-                                <p>
-                                    <strong>Module:</strong> {session.module}
-                                </p>
-                                <p>
-                                    <strong>Teacher:</strong> {session.teacher?.username || "Unknown"}
-                                </p>
-                                <p>
-                                    <strong>Day:</strong> {session.week_day}
-                                </p>
-                                <p>
-                                    <strong>Time:</strong> {session.starting_time} - {session.ending_time}
-                                </p>
-                                <p>
-                                    <strong>Room:</strong> {session.room?.room_id || "Unknown"}
-                                </p>
-                            </div>
-                        ))}
-                </div>
-            )}
+                {/* Selected Session Details */}
+                {/* {selectedSessionId && (
+                    <div className="p-4 border border-green-200 bg-green-50 rounded-md">
+                        {availableSessions
+                            .filter((session) => session.id === parseInt(selectedSessionId))
+                            .map((session) => (
+                                <div key={session.id} className="text-sm text-green-700">
+                                    <h3 className="font-medium text-green-800 mb-2">
+                                        Selected Session Details
+                                    </h3>
+                                    <p>
+                                        <strong>Module:</strong> {session.module}
+                                    </p>
+                                    <p>
+                                        <strong>Teacher:</strong> {session.teacher?.username || "Unknown"}
+                                    </p>
+                                    <p>
+                                        <strong>Day:</strong> {session.week_day}
+                                    </p>
+                                    <p>
+                                        <strong>Time:</strong> {session.starting_time} - {session.ending_time}
+                                    </p>
+                                    <p>
+                                        <strong>Room:</strong> {session.room?.room_id || "Unknown"}
+                                    </p>
+                                </div>
+                            ))}
+                    </div>
+                )} */}
+            </div>
 
             <div>
                 <h2 className="text-lg font-medium mb-4">Reason for swap (optional)</h2>
@@ -416,7 +468,7 @@ export default function SecondPage(props: SecondpageProps) {
 
             <div className="flex justify-between pt-4">
                 <Button variant="outline" onClick={handleBack}>
-                    Back
+                    Cancel
                 </Button>
                 <Button onClick={handleMoveForward} disabled={!selectedSessionId}>
                     Next Step

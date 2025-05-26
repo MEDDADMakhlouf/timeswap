@@ -103,10 +103,10 @@ export default function ThirdPage(props: ThirdPageProps) {
         <div className="space-y-6">
             <h2 className="text-xl font-semibold mb-4">Review Swap Request</h2>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {renderSessionCard(fromsession, "Current Session")}
                 {renderSessionCard(tosession, "Requested Change")}
-            </div>
+            </div> */}
 
             <div className="p-4 bg-blue-50 border border-blue-200 rounded-md">
                 <h3 className="font-medium mb-2 text-blue-800">Swap Type</h3>

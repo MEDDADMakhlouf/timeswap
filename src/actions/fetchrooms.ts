@@ -1,30 +1,28 @@
-import { SwapRequest } from "@/types/swap";
-import { SessionResponse } from "@/types/swap";
+import { Room } from "@/types/session";
 import { fetchWithAuth } from "@/lib/fetch-with-auth";
 import { API_URL } from "@/config/env";
 
-export const FetchSession = async (data: SwapRequest): Promise<SessionResponse[]> => {
+export const FetchRooms = async (): Promise<Room[]> => {
     try {
-        const response = await fetchWithAuth(`${API_URL}/available/`, {
-            method: "POST",
+        const response = await fetchWithAuth(`${API_URL}/rooms/`, {
+            method: "GET",
             mode: "cors",
             headers: {
                 "Content-Type": "application/json",
                 Authorization: `Bearer ${localStorage.getItem("auth_access_token")}`,
             },
-            body: JSON.stringify(data),
         });
-        console.log(JSON.stringify(data));
+
         console.log(response);
 
         if (!response.ok) {
             throw new Error("Network response was not ok");
         }
-        const responseData = (await response.json()) as SessionResponse[];
+        const responseData = (await response.json()) as Room[];
         console.log(responseData);
         return responseData;
     } catch (error) {
-        console.error("Error fetching swap requests:", error);
+        console.error("Error fetching rooms:", error);
         throw error;
     }
 };
