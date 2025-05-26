@@ -75,7 +75,7 @@ export default function SecondPage(props: SecondpageProps) {
                 start_time,
                 end_time,
                 week_day: selectedTargetDay,
-                session_type: fromsession?.session_type || "TD",
+                session_type: selectedRoomType,
             };
 
             try {
@@ -103,7 +103,7 @@ export default function SecondPage(props: SecondpageProps) {
         };
 
         fetchAvailableSessions();
-    }, [fromsession, selectedTargetTime, selectedTargetDay, swapType]);
+    }, [fromsession, selectedTargetTime, selectedTargetDay, swapType, selectedRoomType]);
 
 
     const getAvailableTimes = () => {
@@ -298,7 +298,7 @@ export default function SecondPage(props: SecondpageProps) {
                         </Select>
                     </div>
                     {/* Select all available sessions of the selected type */}
-                    <div className="mb-4">
+                    {/* <div className="mb-4">
                         <Select
                             value={selectedSessionId}
                             onValueChange={setSelectedSessionId}
@@ -316,7 +316,7 @@ export default function SecondPage(props: SecondpageProps) {
                                     ))}
                             </SelectContent>
                         </Select>
-                    </div>
+                    </div> */}
                 </div>
 
                 {/* Available Sessions Selection */}
