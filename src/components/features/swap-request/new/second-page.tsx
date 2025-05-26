@@ -3,15 +3,9 @@ import React, { useEffect, useState } from "react";
 import { SessionResponse, SwapRequest } from "@/types/swap";
 import { Button } from "@/components/ui/button";
 import { FetchSession } from "@/actions/fetchsession";
-import { FetchRooms } from "@/actions/fetchrooms";
-import { Room } from "@/types/session";
 import { toast } from "sonner";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { Card, CardContent } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Filter, Search } from "lucide-react";
 
 interface SecondpageProps {
     phase: number;
@@ -33,35 +27,18 @@ export default function SecondPage(props: SecondpageProps) {
     const [isLoading, setIsLoading] = useState(false);
 
     // Filter states
-    const [filteredSessions, setFilteredSessions] = useState<SessionResponse[]>([]);
-    const [selectedTargetRoom, setSelectedTargetRoom] = useState("");
     const [selectedTargetTime, setSelectedTargetTime] = useState("");
     const [selectedTargetDay, setSelectedTargetDay] = useState("");
 
-    // Rooms state
-    const [availableRooms, setAvailableRooms] = useState<Room[]>([]);
-    const [isLoadingRooms, setIsLoadingRooms] = useState(false);
+    // Add state for selected room type (session type)
+    const [selectedRoomType, setSelectedRoomType] = useState(fromsession?.session_type || "TD");
 
-    // Fetch rooms on component mount
+    // Update selectedRoomType if fromsession changes
     useEffect(() => {
-        const fetchRooms = async () => {
-            setIsLoadingRooms(true);
-            try {
-                const rooms = await FetchRooms();
-                setAvailableRooms(rooms);
-            } catch (error) {
-                toast.error("Error fetching rooms", {
-                    description: "Failed to retrieve available rooms",
-                });
-                console.error("Error fetching rooms:", error);
-            } finally {
-                setIsLoadingRooms(false);
-            }
-        };
-
-        fetchRooms();
-    }, []);
-
+        if (fromsession?.session_type) {
+            setSelectedRoomType(fromsession.session_type);
+        }
+    }, [fromsession]);
     // Auto-select values based on swap type
     useEffect(() => {
         if (!fromsession) return;
@@ -71,10 +48,7 @@ export default function SecondPage(props: SecondpageProps) {
             setSelectedTargetDay(fromsession.week_day);
             setSelectedTargetTime(`${fromsession.starting_time}-${fromsession.ending_time}`);
             // Reset room selection to force user to choose a different room
-            setSelectedTargetRoom("");
         } else if (swapType === "timeOnly") {
-            // For time-only swaps: auto-select current room only
-            setSelectedTargetRoom(fromsession.room?.room_id || "");
             // Reset day and time selection to allow user to choose different time/day
             setSelectedTargetDay("");
             setSelectedTargetTime("");
@@ -82,16 +56,14 @@ export default function SecondPage(props: SecondpageProps) {
             // For entire session swaps: reset all selections
             setSelectedTargetDay("");
             setSelectedTargetTime("");
-            setSelectedTargetRoom("");
         }
     }, [swapType, fromsession]);
 
     // Fetch available sessions when room, time, and day are selected
     useEffect(() => {
         const fetchAvailableSessions = async () => {
-            if (!selectedTargetRoom || !selectedTargetTime || !selectedTargetDay) {
+            if ( !selectedTargetTime || !selectedTargetDay) {
                 setAvailableSessions([]);
-                setFilteredSessions([]);
                 setSelectedSessionId("");
                 return;
             }
@@ -110,48 +82,12 @@ export default function SecondPage(props: SecondpageProps) {
                 // Fetch available swap sessions
                 const sessionsResult = await FetchSession(data);
 
-                // Filter sessions based on swap type
-                let filteredSessions = sessionsResult.filter((session) => {
-                    // Always exclude user's own session
-                    if (fromsession && session.id === fromsession.id) return false;
-
-                    // Apply swap type specific filtering
-                    if (fromsession && swapType) {
-                        if (swapType === "roomOnly") {
-                            // For room-only swaps: same time/day, different room
-                            return (
-                                session.room?.room_id === selectedTargetRoom &&
-                                session.room?.room_id !== fromsession.room?.room_id &&
-                                session.starting_time === fromsession.starting_time &&
-                                session.ending_time === fromsession.ending_time &&
-                                session.week_day === fromsession.week_day
-                            );
-                        } else if (swapType === "timeOnly") {
-                            // For time-only swaps: same room, different time/day
-                            return (
-                                session.room?.room_id === fromsession.room?.room_id &&
-                                session.room?.room_id === selectedTargetRoom &&
-                                (session.starting_time !== fromsession.starting_time ||
-                                    session.ending_time !== fromsession.ending_time ||
-                                    session.week_day !== fromsession.week_day)
-                            );
-                        } else {
-                            // For entire session swaps: any different session with selected criteria
-                            return session.room?.room_id === selectedTargetRoom;
-                        }
-                    }
-
-                    // Default: match selected room
-                    return session.room?.room_id === selectedTargetRoom;
-                });
-
-                setAvailableSessions(filteredSessions);
-                setFilteredSessions(filteredSessions);
+                setAvailableSessions(sessionsResult);
 
                 // Reset selection when available sessions change
                 setSelectedSessionId("");
 
-                if (filteredSessions.length === 0) {
+                if (availableSessions.length === 0) {
                     toast.info("No available sessions", {
                         description: "No sessions found for the selected criteria",
                     });
@@ -167,25 +103,8 @@ export default function SecondPage(props: SecondpageProps) {
         };
 
         fetchAvailableSessions();
-    }, [fromsession, selectedTargetRoom, selectedTargetTime, selectedTargetDay, swapType]);
+    }, [fromsession, selectedTargetTime, selectedTargetDay, swapType]);
 
-    // Get available rooms and times for selection
-    const getAvailableRooms = () => {
-        // Get room IDs from fetched rooms
-        const roomIds = availableRooms.map((room) => room.room_id);
-
-        // Add rooms based on swap type restrictions
-        if (fromsession && swapType === "roomOnly") {
-            // For room-only swaps, exclude the current room
-            return roomIds.filter((roomId) => roomId !== fromsession.room?.room_id);
-        } else if (fromsession && swapType === "timeOnly") {
-            // For time-only swaps, only show the current room
-            return fromsession.room?.room_id ? [fromsession.room.room_id] : [];
-        } else {
-            // For entire session swaps, show all rooms
-            return roomIds;
-        }
-    };
 
     const getAvailableTimes = () => {
         const times = [
@@ -366,28 +285,42 @@ export default function SecondPage(props: SecondpageProps) {
                             </span>
                         )}
                     </h2>
-                    <Select
-                        value={selectedTargetRoom}
-                        onValueChange={setSelectedTargetRoom}
-                        disabled={isLoadingRooms || swapType === "timeOnly"}
-                    >
-                        <SelectTrigger className="w-full">
-                            <SelectValue
-                                placeholder={isLoadingRooms ? "Loading rooms..." : "Select a Room"}
-                            />
-                        </SelectTrigger>
-                        <SelectContent>
-                            {getAvailableRooms().map((room) => (
-                                <SelectItem key={room} value={room}>
-                                    {room}
-                                </SelectItem>
-                            ))}
-                        </SelectContent>
-                    </Select>
+                    {/* Session type filter dropdown */}
+                    <div className="mb-4">
+                        <Select value={selectedRoomType} onValueChange={setSelectedRoomType}>
+                            <SelectTrigger className="w-full">
+                                <SelectValue placeholder="Select session type" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="TD">TD</SelectItem>
+                                <SelectItem value="Lesson">Lesson</SelectItem>
+                            </SelectContent>
+                        </Select>
+                    </div>
+                    {/* Select all available sessions of the selected type */}
+                    <div className="mb-4">
+                        <Select
+                            value={selectedSessionId}
+                            onValueChange={setSelectedSessionId}
+                        >
+                            <SelectTrigger className="w-full">
+                                <SelectValue placeholder="Select a session" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {availableSessions
+                                    .filter(session => session.session_type?.toLowerCase() === selectedRoomType?.toLowerCase())
+                                    .map(session => (
+                                        <SelectItem key={session.id} value={session.id.toString()}>
+                                            {formatSessionOption(session)}
+                                        </SelectItem>
+                                    ))}
+                            </SelectContent>
+                        </Select>
+                    </div>
                 </div>
 
                 {/* Available Sessions Selection */}
-                {selectedTargetDay && selectedTargetRoom && selectedTargetTime && (
+                {selectedTargetDay && selectedTargetTime && (
                     <div>
                         <h2 className="text-lg font-medium mb-4">Select Available Session</h2>
                         {isLoading ? (
@@ -396,18 +329,18 @@ export default function SecondPage(props: SecondpageProps) {
                                     <p className="text-sm text-gray-500">Loading available sessions...</p>
                                 </div>
                             </div>
-                        ) : filteredSessions.length > 0 ? (
+                        ) : availableSessions.length > 0 ? (
                             <div>
                                 <p className="text-sm mb-2">
-                                    {filteredSessions.length}{" "}
-                                    {filteredSessions.length === 1 ? "session" : "sessions"} available
+                                    {availableSessions.length}{" "}
+                                    {availableSessions.length === 1 ? "session" : "sessions"} available
                                 </p>
                                 <Select value={selectedSessionId} onValueChange={setSelectedSessionId}>
                                     <SelectTrigger className="w-full">
                                         <SelectValue placeholder="Select a session" />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        {filteredSessions.map((session) => (
+                                            {availableSessions.map((session) => (
                                             <SelectItem key={session.id} value={session.id.toString()}>
                                                 {formatSessionOption(session)}
                                             </SelectItem>

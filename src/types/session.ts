@@ -13,6 +13,7 @@ export type Teacher = {
 export type Room = {
     id: number;
     room_id: string;
+    room_type: string;
     equipment: Equipment[];
 };
 

@@ -14,7 +14,6 @@ export const FetchSession = async (data: SwapRequest): Promise<SessionResponse[]
             },
             body: JSON.stringify(data),
         });
-        console.log(JSON.stringify(data));
         console.log(response);
 
         if (!response.ok) {

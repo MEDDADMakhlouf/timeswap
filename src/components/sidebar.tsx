@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { useSwapRequestStore } from "@/stores/swap-requests"; // Zustand store
-import { ArrowLeftRight, Bell, Home, LogOut, Menu } from "lucide-react";
+import { ArrowLeftRight, Bell, Home, LogOut, Menu, Settings } from "lucide-react";
 import { useState } from "react";
 import { useAuth } from "@/lib/auth-provider";
 
@@ -37,6 +37,11 @@ export function Sidebar() {
             href: "/dashboard/notifications",
             icon: <Bell className="size-5" />,
             badge: pendingCount > 0 ? pendingCount : null, // Display badge if there are pending requests
+        },
+        {
+            name: "Settings",
+            href: "/dashboard/settings",
+            icon: <Settings className="size-5" />,
         },
     ];
 

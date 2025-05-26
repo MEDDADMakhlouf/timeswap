@@ -1,3 +1,5 @@
+"use client"
+import { ArrowLeftRightIcon, Bell, Home } from 'lucide-react';
 import React, { useState } from 'react';
 
 const initialProfile = {
@@ -63,28 +65,21 @@ export default function ProfileSettings() {
       {/* Sidebar */}
       <aside className="w-64 bg-white border-r flex flex-col justify-between min-h-screen">
         <div>
-          <div className="flex items-center gap-2 px-6 py-6 border-b">
-            <div className="bg-blue-600 rounded p-1">
-              <svg width="28" height="28" fill="none" viewBox="0 0 24 24"><rect width="24" height="24" rx="4" fill="#fff"/><path d="M7 8V6a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2" stroke="#2563eb" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/><rect x="7" y="8" width="10" height="8" rx="2" stroke="#2563eb" strokeWidth="2"/><path d="M9 16v2a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2v-2" stroke="#2563eb" strokeWidth="2"/></svg>
-            </div>
-            <span className="font-bold text-lg">TimeSwap</span>
-          </div>
           <nav className="mt-6">
             <ul>
               <li>
-                <a href="/dashboard" className="flex items-center px-6 py-3 hover:bg-gray-100">
-                  <span className="material-icons mr-3">home</span> Home
+                <a href="/dashboard" className="flex items-center px-6 py-3 hover:bg-gray-100 gap-4" >
+                  <Home /> Home
                 </a>
               </li>
               <li>
-                <a href="/dashboard/swap" className="flex items-center px-6 py-3 bg-blue-50 text-blue-700 font-semibold border-l-4 border-blue-600">
-                  <span className="material-icons mr-3">swap_horiz</span> Swap Request
+                <a href="/dashboard/swap" className="flex items-center px-6 py-3 bg-blue-50 text-blue-700 font-semibold border-l-4 border-blue-600 gap-4">
+                  <ArrowLeftRightIcon /> Swap Request
                 </a>
               </li>
               <li>
-                <a href="/dashboard/notifications" className="flex items-center px-6 py-3 hover:bg-gray-100">
-                  <span className="material-icons mr-3">notifications</span> Notifications
-                  <span className="ml-auto bg-red-500 text-white text-xs rounded-full px-2 py-0.5">12</span>
+                <a href="/dashboard/notifications" className="flex items-center px-6 py-3 hover:bg-gray-100 gap-4">
+                  <Bell /> Notifications
                 </a>
               </li>
             </ul>
