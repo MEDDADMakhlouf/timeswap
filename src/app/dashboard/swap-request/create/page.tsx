@@ -2,15 +2,22 @@
 
 import Firstpage from "@/components/features/swap-request/new/first-page";
 import Secondpage from "@/components/features/swap-request/new/second-page";
+import Thirdpage from "@/components/features/swap-request/new/third-page";
 import { SessionResponse } from "@/types/swap";
 import { ChevronLeft } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 
 export default function CreateSwapRequestPage() {
-    const [toSession, settoSession] = useState<SessionResponse | null>(null);
-    const [fromSession, setfromSession] = useState<SessionResponse | null>(null);
+    const [toSession, setToSession] = useState<SessionResponse | null>(null);
+    const [fromSession, setFromSession] = useState<SessionResponse | null>(null);
     const [currentStep, setCurrentStep] = useState(1);
+
+    // Form state
+    const [selectedDay, setSelectedDay] = useState("");
+    const [selectedTime, setSelectedTime] = useState("");
+    const [swapType, setSwapType] = useState("entireSession");
+    const [swapReason, setSwapReason] = useState("");
 
     return (
         <div className="max-w-3xl px-4 py-6">
@@ -52,6 +59,21 @@ export default function CreateSwapRequestPage() {
                     </div>
                     <span className="ml-2 text-sm font-medium">Step 2</span>
                 </div>
+
+                <div
+                    className={`flex-grow h-0.5 mx-4 ${currentStep > 2 ? "bg-blue-600" : "bg-gray-200"}`}
+                ></div>
+
+                <div className="flex items-center">
+                    <div
+                        className={`w-6 h-6 rounded-full flex items-center justify-center ${
+                            currentStep >= 3 ? "bg-blue-600 text-white" : "border border-gray-300"
+                        }`}
+                    >
+                        {currentStep > 3 ? "✓" : "3"}
+                    </div>
+                    <span className="ml-2 text-sm font-medium">Step 3</span>
+                </div>
             </div>
 
             {/* Form content */}
@@ -59,17 +81,34 @@ export default function CreateSwapRequestPage() {
                 <Firstpage
                     phase={currentStep}
                     setPhase={setCurrentStep}
-                    setfromsession={setfromSession}
-                    settosession={settoSession}
+                    setfromSession={setFromSession}
+                    swapType={swapType}
+                    setSwapType={setSwapType}
+                    selectedDay={selectedDay}
+                    setSelectedDay={setSelectedDay}
+                    selectedTime={selectedTime}
+                    setSelectedTime={setSelectedTime}
                 />
             ) : currentStep === 2 ? (
                 <Secondpage
                     phase={currentStep}
                     setPhase={setCurrentStep}
-                    setfromsession={setfromSession}
-                    settosession={settoSession}
+                    settosession={setToSession}
+                    fromsession={fromSession}
+                    swapType={swapType}
+                    selectedDay={selectedDay}
+                    selectedTime={selectedTime}
+                    swapReason={swapReason}
+                    setSwapReason={setSwapReason}
+                />
+            ) : currentStep === 3 ? (
+                <Thirdpage
+                    phase={currentStep}
+                    setPhase={setCurrentStep}
                     fromsession={fromSession}
                     tosession={toSession}
+                    swapReason={swapReason}
+                    swapType={swapType}
                 />
             ) : null}
         </div>

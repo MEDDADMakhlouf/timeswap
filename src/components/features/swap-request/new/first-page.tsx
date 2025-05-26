@@ -2,80 +2,68 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { SessionResponse, SwapRequest } from "@/types/swap";
-import { FetchSession } from "@/actions/fetchsession";
 import { GetSection } from "@/actions/checkursession";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { AlertCircle } from "lucide-react";
-import { toast } from "sonner";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
+import { toast } from "sonner";
 
 interface FirstpageProps {
     phase: number;
     setPhase: React.Dispatch<React.SetStateAction<number>>;
-    settosession: React.Dispatch<React.SetStateAction<SessionResponse | null>>;
-    setfromsession: React.Dispatch<React.SetStateAction<SessionResponse | null>>;
+    setfromSession: React.Dispatch<React.SetStateAction<SessionResponse | null>>;
+    swapType: string;
+    setSwapType: React.Dispatch<React.SetStateAction<string>>;
+    selectedDay: string;
+    setSelectedDay: React.Dispatch<React.SetStateAction<string>>;
+    selectedTime: string;
+    setSelectedTime: React.Dispatch<React.SetStateAction<string>>;
 }
 
 export default function Firstpage(props: FirstpageProps) {
-    const [selectedDay, setSelectedDay] = useState("");
-    const [selectedTime, setSelectedTime] = useState("");
-    const [swapType, setSwapType] = useState("entireSession");
-    const [sessions, setSessions] = useState<SessionResponse[]>([]);
-    const [selectedSessionId, setSelectedSessionId] = useState<number | null>(null);
-    const [selectedSession, setSelectedSession] = useState<SessionResponse | null>(null);
+    const {
+        phase,
+        setPhase,
+        setfromSession,
+        swapType,
+        setSwapType,
+        selectedDay,
+        setSelectedDay,
+        selectedTime,
+        setSelectedTime,
+    } = props;
+
+    const [currentSession, setCurrentSession] = useState<SessionResponse | null>(null);
     const [isLoading, setIsLoading] = useState(false);
 
-    // Get session type based on swap type selection
-    const getSessionType = (): string => {
-        switch (swapType) {
-            case "entireSession":
-                return "Lesson";
-            case "roomOnly":
-                return "TD";
-            case "timeOnly":
-                return "TP";
-            default:
-                return "Lesson";
-        }
-    };
-
-    // Fetch data whenever selections change
+    // Fetch current session when selections change
     useEffect(() => {
-        const fetchData = async () => {
+        const fetchCurrentSession = async () => {
             if (!selectedDay || !selectedTime) return;
 
             setIsLoading(true);
             const [start_time, end_time] = selectedTime.split("-");
-            const sessionType = getSessionType();
 
-            const data: SwapRequest = {
-                session_type: sessionType,
+            const data: Omit<SwapRequest, "session_type"> = {
                 start_time,
                 end_time,
                 week_day: selectedDay,
             };
 
             try {
-                // Fetch the user's current session (from session)
+                // Fetch the user's current session
                 const sectionResult = await GetSection(data);
-                setSelectedSession(sectionResult);
+                setCurrentSession(sectionResult);
+                setfromSession(sectionResult);
 
-                // Fetch available swap sessions
-                const sessionsResult = await FetchSession(data);
-                setSessions(sessionsResult);
-
-                // Reset selected session ID when fetch criteria change
-                setSelectedSessionId(null);
-
-                if (sessionsResult.length === 0) {
-                    toast.info("No available sessions", {
-                        description: "No sessions found matching your criteria",
+                if (!sectionResult) {
+                    toast.error("No session found", {
+                        description: "You don't have a session matching these criteria",
                     });
                 }
             } catch (error) {
-                toast.error("Error fetching sessions", {
-                    description: "Failed to retrieve session data",
+                toast.error("Error fetching session", {
+                    description: "Failed to retrieve your session data",
                 });
                 console.error("Error fetching data:", error);
             } finally {
@@ -83,42 +71,26 @@ export default function Firstpage(props: FirstpageProps) {
             }
         };
 
-        fetchData();
-    }, [selectedDay, selectedTime, swapType]);
+        fetchCurrentSession();
+    }, [selectedDay, selectedTime, setfromSession]);
 
-    const handleMoveForward = (id: number) => {
-        if (!selectedSession) {
-            toast.error("Original session not found", {
-                description: "Your current session information could not be retrieved",
+    const handleMoveForward = () => {
+        if (!currentSession) {
+            toast.error("No session found", {
+                description: "Please select a day and time where you have a session",
             });
             return;
         }
-
-        const session = sessions.find((s) => s.id === id) || null;
-        if (!session) {
-            toast.error("Target session not found", {
-                description: "The selected session could not be found",
-            });
-            return;
-        }
-
-        // Store both the original and target sessions
-        props.setfromsession(selectedSession);
-        props.settosession(session);
-
-        // Log to verify data is passed correctly
-        console.log("From session:", selectedSession);
-        console.log("To session:", session);
 
         // Move to next step
-        props.setPhase(props.phase + 1);
+        setPhase(phase + 1);
     };
 
     const handleCancel = () => {
+        // Reset form
         setSelectedDay("");
         setSelectedTime("");
-        setSessions([]);
-        setSelectedSessionId(null);
+        setCurrentSession(null);
     };
 
     return (
@@ -160,12 +132,12 @@ export default function Firstpage(props: FirstpageProps) {
                     </div>
                 </div>
 
-                {selectedSession && (
+                {currentSession && (
                     <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-md">
                         <p className="text-sm font-medium text-blue-800">Your current session:</p>
                         <p className="text-sm text-blue-700">
-                            {selectedSession.module} ({selectedSession.session_type}) - Room{" "}
-                            {selectedSession.room?.room_id}
+                            {currentSession.module} ({currentSession.session_type}) - Room{" "}
+                            {currentSession.room?.room_id}
                         </p>
                     </div>
                 )}
@@ -192,36 +164,7 @@ export default function Firstpage(props: FirstpageProps) {
             {isLoading && (
                 <div className="flex justify-center py-4">
                     <div className="animate-pulse text-center">
-                        <p className="text-sm text-gray-500">Loading sessions...</p>
-                    </div>
-                </div>
-            )}
-
-            {!isLoading && sessions.length > 0 && (
-                <div className="space-y-4">
-                    <h2 className="text-lg font-medium">Available Sessions</h2>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        {sessions.map((session) => (
-                            <div
-                                key={session.id}
-                                onClick={() => setSelectedSessionId(session.id)}
-                                className={`border rounded-lg p-4 cursor-pointer transition-all ${
-                                    selectedSessionId === session.id
-                                        ? "border-primary bg-primary/5"
-                                        : "border-gray-200 hover:border-gray-300"
-                                }`}
-                            >
-                                <h3 className="font-medium">{session.module}</h3>
-                                <div className="mt-2 text-sm text-gray-600 space-y-1">
-                                    <p>Teacher: {session.teacher?.username || "Unknown"}</p>
-                                    <p>Room: {session.room?.room_id || "Unknown"}</p>
-                                    <p>
-                                        Time: {session.starting_time} - {session.ending_time}
-                                    </p>
-                                    <p>Day: {session.week_day}</p>
-                                </div>
-                            </div>
-                        ))}
+                        <p className="text-sm text-gray-500">Checking your session...</p>
                     </div>
                 </div>
             )}
@@ -230,13 +173,9 @@ export default function Firstpage(props: FirstpageProps) {
                 <Button variant="outline" onClick={handleCancel}>
                     Cancel
                 </Button>
-                {selectedSessionId ? (
-                    <Button onClick={() => handleMoveForward(selectedSessionId)} disabled={!selectedSession}>
-                        Next Step
-                    </Button>
-                ) : (
-                    <Button disabled={true}>Select a Session</Button>
-                )}
+                <Button onClick={handleMoveForward} disabled={!currentSession || isLoading}>
+                    Next Step
+                </Button>
             </div>
         </div>
     );

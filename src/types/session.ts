@@ -38,4 +38,6 @@ export type NewSwapRequest = Omit<SessionSwap, "id" | "status">;
 export type NewswapRequest = {
     from_session: Number;
     to_session: Number;
+    swap_type: string;
+    reason?: string;
 };

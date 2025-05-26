@@ -1,5 +1,4 @@
-import { NewswapRequest, NewSwapRequest } from "@/types/session";
-import { SessionResponse, SwapRequest } from "@/types/swap";
+import { NewswapRequest } from "@/types/session";
 import { fetchWithAuth } from "@/lib/fetch-with-auth";
 import { API_URL } from "@/config/env";
 

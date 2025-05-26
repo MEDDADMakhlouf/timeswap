@@ -2,7 +2,7 @@ import { SessionResponse, SwapRequest } from "@/types/swap";
 import { fetchWithAuth } from "@/lib/fetch-with-auth";
 import { API_URL } from "@/config/env";
 
-export const GetSection = async (data: SwapRequest): Promise<SessionResponse> => {
+export const GetSection = async (data: Omit<SwapRequest, "session_type">): Promise<SessionResponse> => {
     try {
         const response = await fetchWithAuth(`${API_URL}/urtimes/`, {
             method: "POST",
