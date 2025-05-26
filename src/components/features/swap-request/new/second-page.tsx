@@ -65,9 +65,30 @@ export default function SecondPage(props: SecondpageProps) {
                 // Fetch available swap sessions
                 const sessionsResult = await FetchSession(data);
                 // Filter out user's own session if present
-                const filteredSessions = fromsession
+                let filteredSessions = fromsession
                     ? sessionsResult.filter((session) => session.id !== fromsession.id)
                     : sessionsResult;
+
+                // Apply swap type restrictions
+                if (fromsession && swapType) {
+                    filteredSessions = filteredSessions.filter((session) => {
+                        // If swapping room only, exclude sessions with the same room
+                        if (swapType === "roomOnly" && session.room?.room_id === fromsession.room?.room_id) {
+                            return false;
+                        }
+
+                        // If swapping time only, exclude sessions with the same time
+                        if (
+                            swapType === "timeOnly" &&
+                            session.starting_time === fromsession.starting_time &&
+                            session.ending_time === fromsession.ending_time
+                        ) {
+                            return false;
+                        }
+
+                        return true;
+                    });
+                }
 
                 setAvailableSessions(filteredSessions);
                 setFilteredSessions(filteredSessions);
@@ -92,7 +113,7 @@ export default function SecondPage(props: SecondpageProps) {
         };
 
         fetchAvailableSessions();
-    }, [fromsession, selectedDay, selectedTime]);
+    }, [fromsession, selectedDay, selectedTime, swapType]);
 
     // Extract unique values for filters
     const getUniqueTeachers = () => {
@@ -220,6 +241,32 @@ export default function SecondPage(props: SecondpageProps) {
 
             <div>
                 <h2 className="text-lg font-medium mb-4">Select a Session to Swap With</h2>
+
+                {/* Swap type information */}
+                {swapType && fromsession && (
+                    <div className="mb-4 p-3 border border-blue-200 bg-blue-50 rounded-md">
+                        <p className="text-sm text-blue-800">
+                            {swapType === "roomOnly" && (
+                                <>
+                                    <strong>Room Only Swap:</strong> Sessions in room{" "}
+                                    {fromsession.room?.room_id} are excluded since you want to change rooms.
+                                </>
+                            )}
+                            {swapType === "timeOnly" && (
+                                <>
+                                    <strong>Time Only Swap:</strong> Sessions at {fromsession.starting_time}-
+                                    {fromsession.ending_time} are excluded since you want to change time.
+                                </>
+                            )}
+                            {swapType === "entireSession" && (
+                                <>
+                                    <strong>Entire Session Swap:</strong> You can swap with any available
+                                    session.
+                                </>
+                            )}
+                        </p>
+                    </div>
+                )}
 
                 {/* Filters */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 border rounded-md bg-gray-50 mb-4">

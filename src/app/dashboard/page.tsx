@@ -1,17 +1,26 @@
+"use client";
+
 import { Bell, Calendar } from "lucide-react";
 import { UserAvatar } from "@/components/features/dashboard/user-avatar";
 import { SwapRequestNotification } from "@/components/features/swap-request/notification";
 import { Timetable } from "@/components/timetable";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { useEffect, useState } from "react";
 
 export default function HomePage() {
-     const username=localStorage.getItem("username") || "";
+    const [username, setUsername] = useState("");
+
+    useEffect(() => {
+        setUsername(localStorage.getItem("username") || "");
+        console.log(username);
+    }, []);
+
     return (
         <div className="p-6 space-y-8">
             <div className="flex items-center justify-between pt-8">
                 <div>
-                    <h1 className="text-2xl font-bold">Hello Prof.{username}  </h1>
+                    <h1 className="text-2xl font-bold">Hello Prof.{username} </h1>
                     <p className="text-gray-500">Welcome back! Here's your workspace.</p>
                 </div>
                 <UserAvatar name={username} className="h-12 w-12" />
@@ -36,8 +45,8 @@ export default function HomePage() {
                     />
                     <SwapRequestNotification
                         type="rejected"
-                        message="Prof. Nsalah has has rejected your swap request for Computer Networks on March 2 2025"
-                        time="10 minutes ago"
+                        message="Prof. salah has has rejected your swap request for Computer Networks on March 2 2025"
+                        time="50 minutes ago"
                     />
                 </div>
             </div>
