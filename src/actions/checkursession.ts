@@ -9,9 +9,9 @@ export const GetSection = async (data: Omit<SwapRequest, "session_type">): Promi
             mode: "cors",
             headers: {
                 "Content-Type": "application/json",
-               "Authorization": `Bearer ${localStorage.getItem("auth_access_token")}`,
+                Authorization: `Bearer ${localStorage.getItem("auth_access_token")}`,
             },
-            body: JSON.stringify(data),
+            body: JSON.stringify({ ...data, session_type: "TD" }),
         });
         console.log(JSON.stringify(data));
         console.log(response);

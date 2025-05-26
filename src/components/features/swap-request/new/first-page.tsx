@@ -135,10 +135,16 @@ export default function Firstpage(props: FirstpageProps) {
                 {currentSession && (
                     <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-md">
                         <p className="text-sm font-medium text-blue-800">Your current session:</p>
-                        <p className="text-sm text-blue-700">
-                            {currentSession.module} ({currentSession.session_type}) - Room{" "}
-                            {currentSession.room?.room_id}
-                        </p>
+                        {currentSession.module ? (
+                            <p className="text-sm text-blue-700">
+                                {currentSession.module} ({currentSession.session_type}) - Room{" "}
+                                {currentSession.room?.room_id}
+                            </p>
+                        ) : (
+                            <p className="text-sm text-blue-700">
+                                No session found for the selected day and time
+                            </p>
+                        )}
                     </div>
                 )}
             </div>

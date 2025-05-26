@@ -44,7 +44,7 @@ export default function SecondPage(props: SecondpageProps) {
     const [filteredSessions, setFilteredSessions] = useState<SessionResponse[]>([]);
     const [teacherFilter, setTeacherFilter] = useState("all");
     const [roomFilter, setRoomFilter] = useState("all");
-    const [moduleFilter, setModuleFilter] = useState("all");
+    const [timeFilter, setTimeFilter] = useState("all");
 
     // Fetch available sessions on component mount
     useEffect(() => {
@@ -54,8 +54,7 @@ export default function SecondPage(props: SecondpageProps) {
             setIsLoading(true);
             const [start_time, end_time] = selectedTime.split("-");
 
-            const data: SwapRequest = {
-                session_type: "", // Get all sessions regardless of type
+            const data: Omit<SwapRequest, "session_type"> = {
                 start_time,
                 end_time,
                 week_day: selectedDay,
@@ -130,11 +129,11 @@ export default function SecondPage(props: SecondpageProps) {
         return rooms;
     };
 
-    const getUniqueModules = () => {
-        const modules = availableSessions
-            .map((session) => session.module)
+    const getUniqueTimes = () => {
+        const times = availableSessions
+            .map((session) => `${session.starting_time}-${session.ending_time}`)
             .filter((value, index, self) => self.indexOf(value) === index);
-        return modules;
+        return times;
     };
 
     // Apply filters to sessions
@@ -151,18 +150,20 @@ export default function SecondPage(props: SecondpageProps) {
             result = result.filter((session) => session.room?.room_id === roomFilter);
         }
 
-        // Apply module filter
-        if (moduleFilter !== "all") {
-            result = result.filter((session) => session.module === moduleFilter);
+        // Apply time filter
+        if (timeFilter !== "all") {
+            result = result.filter(
+                (session) => `${session.starting_time}-${session.ending_time}` === timeFilter,
+            );
         }
 
         setFilteredSessions(result);
-    }, [availableSessions, teacherFilter, roomFilter, moduleFilter]);
+    }, [availableSessions, teacherFilter, roomFilter, timeFilter]);
 
     const resetFilters = () => {
         setTeacherFilter("all");
         setRoomFilter("all");
-        setModuleFilter("all");
+        setTimeFilter("all");
     };
 
     const handleBack = () => {
@@ -309,18 +310,18 @@ export default function SecondPage(props: SecondpageProps) {
                     </div>
 
                     <div>
-                        <Label htmlFor="module-filter" className="block text-sm font-medium mb-1">
-                            Module
+                        <Label htmlFor="time-filter" className="block text-sm font-medium mb-1">
+                            Time
                         </Label>
-                        <Select value={moduleFilter} onValueChange={setModuleFilter}>
-                            <SelectTrigger id="module-filter" className="w-full">
-                                <SelectValue placeholder="Filter by module" />
+                        <Select value={timeFilter} onValueChange={setTimeFilter}>
+                            <SelectTrigger id="time-filter" className="w-full">
+                                <SelectValue placeholder="Filter by time" />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="all">All Modules</SelectItem>
-                                {getUniqueModules().map((module) => (
-                                    <SelectItem key={module} value={module}>
-                                        {module}
+                                <SelectItem value="all">All Times</SelectItem>
+                                {getUniqueTimes().map((time) => (
+                                    <SelectItem key={time} value={time}>
+                                        {time}
                                     </SelectItem>
                                 ))}
                             </SelectContent>
